@@ -1,2 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="24px" height="24px" version="1.1" viewBox="0 -960 960 960" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="m480-920c-233.17 3.8994-350.52 224.38-310 400 11.179 45.488 41.594 101.68 77.5 159.38l123.52-123.52c-31.043-29.184-51.016-69.89-51.016-115.86 0-88.365 71.635-160 160-160 45.97 0 86.675 19.972 115.86 51.016l106.8-106.8c-53.972-58.54-125.72-102.94-222.66-104.22zm304.45 248.67-445 445c64.756 85.878 128.75 160.87 140.55 173.75 27.535-29.225 275.35-331.55 310-467.42 11.174-49.021 7.0953-100.83-5.5469-151.33z" fill="#fff" fill-opacity=".5" stop-color="#000000" stroke-linecap="square" stroke-width="80" style="paint-order:stroke fill markers"/><path d="m170-170 660-660" fill="none" stop-color="#000000" stroke="#fff" stroke-linecap="round" stroke-width="80" style="paint-order:stroke fill markers"/></svg>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+<svg width="800px" height="800px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--gis" preserveAspectRatio="xMidYMid meet" fill="#000000">
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="SVGRepo_iconCarrier">
+<path d="M68.913 48.908l-.048.126c.015-.038.027-.077.042-.115l.006-.011z" fill="#ffffff"/>
+<path d="M50.002 0C30.764 0 15 15.719 15 34.902c0 7.433 2.374 14.339 6.393 20.018l2.72 4.703L36.28 47.457a18.442 18.442 0 0 1-4.88-12.555c0-10.33 8.243-18.548 18.602-18.548c4.87 0 9.256 1.83 12.553 4.828L74.082 9.654C67.794 3.685 59.308 0 50.002 0zm34.824 31.438L36.033 80.23l9.697 16.764c3.409 4.453 5.674 3.608 8.508-.234l26.846-45.684c.542-.98.967-2.025 1.338-3.092a34.446 34.446 0 0 0 2.404-16.547z" fill="#ffffff"/>
+<path fill="#ffffff" d="M87.123 2.27L97.73 12.878L12.877 97.73L2.271 87.123z"/>
+</g>
+</svg>
