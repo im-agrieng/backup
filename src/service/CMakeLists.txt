@@ -14,7 +14,7 @@ add_library(sigpac-go_service STATIC ${QFIELD_SERVICE_SRCS} ${QFIELD_SERVICE_HDR
 include(GenerateExportHeader)
 generate_export_header(sigpac-go_service
     BASE_NAME qfield_service
-    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h)
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/sigpac-go_service_export.h)
 
 
 target_include_directories(sigpac-go_service SYSTEM
