@@ -7,7 +7,7 @@
       "vcpkg/triplets"
     ]
   },
-  "name": "qfield",
+  "name": "sigpac-go",
   "version-string": "dev",
   "description": "A simplified and touch optimized frontend for QGIS.",
   "homepage": "https://github.com/opengisch/qfield",

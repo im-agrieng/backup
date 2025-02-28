@@ -16,7 +16,7 @@
 #ifndef QFIELDCLOUDSERVICE_H
 #define QFIELDCLOUDSERVICE_H
 
-#include "qfield_service_export.h"
+#include "sigpac-go_service_export.h"
 
 #include <QtCore/private/qandroidextras_p.h>
 #include <QtGlobal>
