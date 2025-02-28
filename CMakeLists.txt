@@ -14,6 +14,26 @@ set(APP_VERSION "0" CACHE STRING "Application Version (Example: v1.0.0)")
 set(APP_VERSION_STR "local - dev" CACHE STRING "Application Version Name (Example: 1.0.0 - Homerun)")
 set(APP_PACKAGE_NAME "sigpac-go" CACHE STRING "Package name suffix. E.g. qfield --> ch.opengis.qfield")
 
+# Add SIGPAC-Go version information
+set(SIGPAC_GO_VERSION_MAJOR 1)
+set(SIGPAC_GO_VERSION_MINOR 0)
+set(SIGPAC_GO_VERSION_PATCH 0)
+set(SIGPAC_GO_VERSION "${SIGPAC_GO_VERSION_MAJOR}.${SIGPAC_GO_VERSION_MINOR}.${SIGPAC_GO_VERSION_PATCH}")
+
+# Define installation directories if not already defined
+if(NOT DEFINED SIGPAC_BIN_DIR)
+    set(SIGPAC_BIN_DIR "bin" CACHE PATH "Binary installation directory")
+endif()
+if(NOT DEFINED SIGPAC_LIB_DIR)
+    set(SIGPAC_LIB_DIR "lib" CACHE PATH "Library installation directory")
+endif()
+if(NOT DEFINED SIGPAC_INCLUDE_DIR)
+    set(SIGPAC_INCLUDE_DIR "include/sigpac-go" CACHE PATH "Include installation directory")
+endif()
+if(NOT DEFINED SIGPAC_FW_SUBDIR)
+    set(SIGPAC_FW_SUBDIR "Frameworks" CACHE PATH "Framework installation subdirectory")
+endif()
+
 string(REGEX REPLACE "v" "" CLEAN_APP_VERSION "${APP_VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -34,6 +54,12 @@ project(${APP_NAME}
 GET_GIT_HEAD_REVISION(GIT_REFSPEC GIT_REV)
 
 message(STATUS "Building for git rev ${GIT_REV}")
+
+configure_file(
+    "${CMAKE_SOURCE_DIR}/cmake/sigpac-go-config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/sigpac-go-config.cmake"
+    @ONLY
+)
 
 set(DEFAULT_BIN_SUBDIR     bin)
 set(DEFAULT_CGIBIN_SUBDIR  bin)
