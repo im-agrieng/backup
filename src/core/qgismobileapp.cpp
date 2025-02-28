@@ -254,14 +254,14 @@ QgisMobileapp::QgisMobileapp( QgsApplication *app, QObject *parent )
     QgsApplication::instance()->localizedDataPathRegistry()->setPaths( localizedDataPaths );
   }
 
-  QFontDatabase::addApplicationFont( ":/fonts/Cadastra-Bold.ttf" );
-  QFontDatabase::addApplicationFont( ":/fonts/Cadastra-BoldItalic.ttf" );
-  QFontDatabase::addApplicationFont( ":/fonts/Cadastra-Condensed.ttf" );
-  QFontDatabase::addApplicationFont( ":/fonts/Cadastra-Italic.ttf" );
-  QFontDatabase::addApplicationFont( ":/fonts/Cadastra-Regular.ttf" );
-  QFontDatabase::addApplicationFont( ":/fonts/Cadastra-Semibolditalic.ttf" );
-  QFontDatabase::addApplicationFont( ":/fonts/CadastraSymbol-Mask.ttf" );
-  QFontDatabase::addApplicationFont( ":/fonts/CadastraSymbol-Regular.ttf" );
+  QFontDatabase::addApplicationFont( ":/fonts/Nunito-Bold.ttf" );
+  QFontDatabase::addApplicationFont( ":/fonts/Nunito-BoldItalic.ttf" );
+  QFontDatabase::addApplicationFont( ":/fonts/Nunito-Condensed.ttf" );
+  QFontDatabase::addApplicationFont( ":/fonts/Nunito-Italic.ttf" );
+  QFontDatabase::addApplicationFont( ":/fonts/Nunito-Regular.ttf" );
+  QFontDatabase::addApplicationFont( ":/fonts/Nunito-Semibolditalic.ttf" );
+  QFontDatabase::addApplicationFont( ":/fonts/NunitoSymbol-Mask.ttf" );
+  QFontDatabase::addApplicationFont( ":/fonts/NunitoSymbol-Regular.ttf" );
 
   QgsApplication::fontManager()->enableFontDownloadsForSession();
 
