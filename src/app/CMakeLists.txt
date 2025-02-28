@@ -36,8 +36,8 @@ function(create_executable)
       ${CMAKE_SOURCE_DIR}/resources/resources.qrc ${ICON_SRC})
 
   if(ANDROID)
-    qt_add_executable(sig ${QFIELD_SOURCES})
-    set_property(TARGET sig PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+    qt_add_executable(sigpac-go ${QFIELD_SOURCES})
+    set_property(TARGET sigpac-go PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
                                                ${ANDROID_PACKAGE_SOURCE_DIR})
     set_property(TARGET ${exe_TARGET} PROPERTY QT_QML_IMPORT_PATH
                                                $ENV{Qt6_DIR}/qml)
@@ -141,7 +141,7 @@ endfunction()
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   set(EXTRA_ARGS MACOSX_BUNDLE)
 endif()
-create_executable(TARGET sig EXTRA_ARGS ${EXTRA_ARGS})
+create_executable(TARGET sigpac-go EXTRA_ARGS ${EXTRA_ARGS})
 
 if(WITH_SPIX)
   create_executable(TARGET qfield_spix)

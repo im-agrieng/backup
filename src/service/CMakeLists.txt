@@ -1,29 +1,29 @@
 set(QFIELD_SERVICE_SRCS qfieldcloudservice.cpp qfieldpositioningservice.cpp)
 set(QFIELD_SERVICE_HDRS qfieldcloudservice.h qfieldpositioningservice.h)
 
-add_library(sig_service STATIC ${QFIELD_SERVICE_SRCS} ${QFIELD_SERVICE_HDRS})
+add_library(sigpac-go_service STATIC ${QFIELD_SERVICE_SRCS} ${QFIELD_SERVICE_HDRS})
 
 include(GenerateExportHeader)
-generate_export_header(sig_service)
+generate_export_header(sigpac-go_service)
 
-target_include_directories(sig_service SYSTEM
+target_include_directories(sigpac-go_service SYSTEM
                            PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-target_include_directories(sig_service
+target_include_directories(sigpac-go_service
                            PUBLIC ${CMAKE_SOURCE_DIR}/src/service)
 
-target_compile_features(sig_service PUBLIC cxx_std_17)
+target_compile_features(sigpac-go_service PUBLIC cxx_std_17)
 
-set_target_properties(sig_service PROPERTIES AUTOMOC TRUE)
+set_target_properties(sigpac-go_service PROPERTIES AUTOMOC TRUE)
 
-target_link_libraries(sig_service PRIVATE qfield_core ${QGIS_CORE_LIBRARY})
+target_link_libraries(sigpac-go_service PRIVATE qfield_core ${QGIS_CORE_LIBRARY})
 
-target_link_libraries(sig_service PUBLIC Qt::Core Qt::Positioning
+target_link_libraries(sigpac-go_service PUBLIC Qt::Core Qt::Positioning
                                             Qt::CorePrivate)
 
 install(FILES ${QFIELD_SERVICE_HDRS} DESTINATION ${QFIELD_INCLUDE_DIR})
 install(
-  TARGETS sig_service
+  TARGETS sigpac-go_service
   BUNDLE DESTINATION ${QFIELD_BIN_DIR}
   RUNTIME DESTINATION ${QFIELD_BIN_DIR}
   LIBRARY DESTINATION ${QFIELD_LIB_DIR}

@@ -171,13 +171,13 @@ QtObject {
       ppiName = "hdpi";
     else
       ppiName = "mdpi";
-    var theme = 'sig';
+    var theme = 'sigpac-go';
     var path = 'qrc:/themes/' + theme + '/' + ppiName + '/' + name + '.png';
     return path;
   }
 
   function getThemeVectorIcon(name) {
-    var theme = 'sig';
+    var theme = 'sigpac-go';
     var path = 'qrc:/themes/' + theme + '/nodpi/' + name + '.svg';
     return path;
   }
