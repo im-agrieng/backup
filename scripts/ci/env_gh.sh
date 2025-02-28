@@ -73,8 +73,8 @@ if [[ ${ALL_FILES_ACCESS} == "ON" ]]; then
 	export APP_PACKAGE_NAME="qfield_all_access${APP_PACKAGE_NAME_SUFFIX}"
 	export CI_PACKAGE_NAME="qfield_all_access"
 else
-	export APP_PACKAGE_NAME="qfield${APP_PACKAGE_NAME_SUFFIX}"
-	export CI_PACKAGE_NAME="qfield"
+	export APP_PACKAGE_NAME="sigpac-god${APP_PACKAGE_NAME_SUFFIX}"
+	export CI_PACKAGE_NAME="sigpac"
 fi
 
 {
