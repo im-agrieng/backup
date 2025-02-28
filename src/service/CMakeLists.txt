@@ -3,8 +3,12 @@ set(QFIELD_SERVICE_HDRS qfieldcloudservice.h qfieldpositioningservice.h)
 
 add_library(sigpac-go_service STATIC ${QFIELD_SERVICE_SRCS} ${QFIELD_SERVICE_HDRS})
 
+# Generate export header with QField naming to maintain compatibility
 include(GenerateExportHeader)
-generate_export_header(sigpac-go_service)
+generate_export_header(sigpac-go_service
+    BASE_NAME qfield_service
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h)
+
 
 target_include_directories(sigpac-go_service SYSTEM
                            PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
@@ -13,6 +17,7 @@ target_include_directories(sigpac-go_service
                            PUBLIC ${CMAKE_SOURCE_DIR}/src/service)
 
 target_compile_features(sigpac-go_service PUBLIC cxx_std_17)
+
 
 set_target_properties(sigpac-go_service PROPERTIES AUTOMOC TRUE)
 
