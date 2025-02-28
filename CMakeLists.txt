@@ -273,7 +273,7 @@ if(WITH_VCPKG)
   install(DIRECTORY "${VCPKG_BASE_DIR}/share/gdal/" DESTINATION "${CMAKE_INSTALL_DATADIR}/gdal")
   install(FILES "${CMAKE_BINARY_DIR}/cacert.pem" DESTINATION ${CMAKE_INSTALL_DATADIR}/)
 
-  add_dependencies(qfield deploy)
+  add_dependencies(sigpac-go deploy)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

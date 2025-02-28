@@ -457,7 +457,7 @@ public class QFieldActivity extends QtActivity {
 
     private void prepareQtActivity() {
         sharedPreferences =
-            getSharedPreferences("QField", Context.MODE_PRIVATE);
+            getSharedPreferences("SIGPAC-Go", Context.MODE_PRIVATE);
         sharedPreferenceEditor = sharedPreferences.edit();
 
         checkAllFileAccess(); // Storage access permission handling for Android
@@ -487,7 +487,7 @@ public class QFieldActivity extends QtActivity {
 
         String storagePath =
             Environment.getExternalStorageDirectory().getAbsolutePath();
-        String rootDataDir = storagePath + "/QField/";
+        String rootDataDir = storagePath + "/SIGPAC-Go/";
         File storageFile = new File(rootDataDir);
         storageFile.mkdir();
         if (storageFile.canWrite()) {
@@ -511,7 +511,7 @@ public class QFieldActivity extends QtActivity {
                 }
 
                 // create QField directories
-                String dataDir = file.getAbsolutePath() + "/QField/";
+                String dataDir = file.getAbsolutePath() + "/SIGPAC-Go/";
                 new File(dataDir + "basemaps/").mkdirs();
                 new File(dataDir + "fonts/").mkdirs();
                 new File(dataDir + "proj/").mkdirs();

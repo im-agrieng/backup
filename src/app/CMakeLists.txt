@@ -122,7 +122,7 @@ function(create_executable)
   set_target_properties(${exe_TARGET} PROPERTIES AUTORCC TRUE)
   if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # Handles platform-specific tasks, including insuring permission plugins
-    qt_finalize_executable(qfield)
+    qt_finalize_executable(sigpac-go)
 
     set_target_properties(
       ${exe_TARGET}
@@ -150,7 +150,7 @@ if(WITH_SPIX)
 endif()
 
 install(
-  TARGETS qfield
+  TARGETS sigpac-go
   BUNDLE DESTINATION ${QFIELD_BIN_DIR}
   RUNTIME DESTINATION ${QFIELD_BIN_DIR}
   LIBRARY DESTINATION ${QFIELD_LIB_DIR}
@@ -164,8 +164,8 @@ if(IOS)
 
   include("${CMAKE_SOURCE_DIR}/cmake/AddQtIosApp.cmake")
   add_qt_ios_app(
-    qfield
-    NAME "QField"
+    sigpac-go
+    NAME "SIGPAC-Go"
     VERSION "${APK_VERSION_CODE}"
     SHORT_VERSION "${APK_VERSION_CODE}"
     LONG_VERSION "${APK_VERSION_CODE}"
