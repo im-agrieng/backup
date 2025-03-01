@@ -1,32 +1,36 @@
-# Android specific configurations
-if(ANDROID)
-    set(ANDROID_PLATFORM_INT 24)
-    set(ANDROID_TARGET_PLATFORM 33)
-    set(ANDROID_BUILD_TOOLS_VERSION "33.0.2")
-    set(ANDROID_NDK_VERSION "25.2.9519653")
-    
-    # Package name
-    set(APP_PACKAGE_NAME "sigpac_go")
-    set(ANDROID_PACKAGE_NAME "ch.opengis.${APP_PACKAGE_NAME}")
-
-    # Configure AndroidManifest.xml
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/platform/android/AndroidManifest.xml.in"
-        "${CMAKE_BINARY_DIR}/android/AndroidManifest.xml"
-        @ONLY
-    )
-
-    # Configure build.gradle
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/platform/android/build.gradle.in"
-        "${CMAKE_BINARY_DIR}/android/build.gradle"
-        @ONLY
-    )
-
-    # Configure CPackAndroidDeployQt.cmake
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/platform/android/CPackAndroidDeployQt.cmake.in"
-        "${CMAKE_BINARY_DIR}/CPackAndroidDeployQt.cmake"
-        @ONLY
-    )
-endif()
+{
+    "description": "This file is used for Android deployment settings",
+    "qt": "@QT_ANDROID_PATH_CMAKE_DIR@",
+    "sdk": "@ANDROID_SDK_ROOT@",
+    "ndk": "@ANDROID_NDK@",
+    "toolchain-prefix": "@ANDROID_TOOLCHAIN_MACHINE_NAME@",
+    "tool-prefix": "@ANDROID_TOOLCHAIN_MACHINE_NAME@",
+    "ndk-host": "@ANDROID_NDK_HOST_SYSTEM_NAME@",
+    "target-architecture": "@ANDROID_ABI@",
+    "application-binary": "@ANDROID_APP_BINARY@",
+    "android-package": "ch.opengis.qfield_dev",
+    "android-app-name": "@APP_NAME@",
+    "qml-root-path": "@CMAKE_SOURCE_DIR@",
+    "stdcpp-path": "@ANDROID_STDCPP_PATH@",
+    "sdkBuildToolsRevision": "@ANDROID_BUILD_TOOLS_VERSION@",
+    "extraPrefixDirs": [ 
+        "@CMAKE_INSTALL_PREFIX@",
+        "@QCA_DIR@"
+    ],
+    "android-extra-plugins": [
+        "plugins/crypto/libqca-ossl.so"
+    ],
+    "android-extra-libs": [
+        "lib/libz.so",
+        "lib/libcrypto.so",
+        "lib/libssl.so",
+        "lib/libqca.so"
+    ],
+    "android-extra-permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_EXTERNAL_STORAGE"
+    ]
+}

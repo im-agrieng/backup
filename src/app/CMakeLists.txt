@@ -7,6 +7,11 @@ if(POLICY QTP0002)
     qt_policy(SET QTP0002 NEW)
 endif()
 
+if(WITH_VCPKG)
+    find_package(Qca REQUIRED)
+    target_link_libraries(${exe_TARGET} PRIVATE Qca::Qca)
+endif()
+
 # Configure platform-specific settings
 if(MSVC)
   configure_file("${CMAKE_SOURCE_DIR}/platform/windows/appicon.rc.in"
