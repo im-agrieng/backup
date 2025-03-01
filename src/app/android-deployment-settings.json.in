@@ -1,0 +1,32 @@
+# Android specific configurations
+if(ANDROID)
+    set(ANDROID_PLATFORM_INT 24)
+    set(ANDROID_TARGET_PLATFORM 33)
+    set(ANDROID_BUILD_TOOLS_VERSION "33.0.2")
+    set(ANDROID_NDK_VERSION "25.2.9519653")
+    
+    # Package name
+    set(APP_PACKAGE_NAME "sigpac_go")
+    set(ANDROID_PACKAGE_NAME "ch.opengis.${APP_PACKAGE_NAME}")
+
+    # Configure AndroidManifest.xml
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/platform/android/AndroidManifest.xml.in"
+        "${CMAKE_BINARY_DIR}/android/AndroidManifest.xml"
+        @ONLY
+    )
+
+    # Configure build.gradle
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/platform/android/build.gradle.in"
+        "${CMAKE_BINARY_DIR}/android/build.gradle"
+        @ONLY
+    )
+
+    # Configure CPackAndroidDeployQt.cmake
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/platform/android/CPackAndroidDeployQt.cmake.in"
+        "${CMAKE_BINARY_DIR}/CPackAndroidDeployQt.cmake"
+        @ONLY
+    )
+endif()
