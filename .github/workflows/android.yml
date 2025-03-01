@@ -140,8 +140,18 @@ jobs:
           
           echo "vcpkg bootstrapped successfully. Installing QCA..."
           
-          # Install QCA with shared libraries
-          ./vcpkg/vcpkg install qca:arm64-android --features=ossl --buildtype=release --options=qt-shared-libs=ON
+          # Install QCA with proper syntax
+          ./vcpkg/vcpkg install qca[ossl] --triplet=arm64-android
+          
+          # Create a custom triplets file to ensure shared libraries are used
+          mkdir -p vcpkg/triplets/custom
+          echo "set(VCPKG_TARGET_ARCHITECTURE arm64)" > vcpkg/triplets/custom/arm64-android-shared.cmake
+          echo "set(VCPKG_CRT_LINKAGE dynamic)" >> vcpkg/triplets/custom/arm64-android-shared.cmake
+          echo "set(VCPKG_LIBRARY_LINKAGE shared)" >> vcpkg/triplets/custom/arm64-android-shared.cmake
+          echo "set(VCPKG_CMAKE_SYSTEM_NAME Android)" >> vcpkg/triplets/custom/arm64-android-shared.cmake
+          
+          # Install again with the custom triplet to ensure shared libraries
+          ./vcpkg/vcpkg install qca[ossl] --triplet=arm64-android-shared
           
           # Verify the installation
           echo "QCA installation complete. Verifying files:"
@@ -293,3 +303,4 @@ jobs:
               qfield-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-x86.apk
         env:
           GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+
