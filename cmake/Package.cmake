@@ -6,15 +6,14 @@ find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${VCPKG_INSTALLED_DIR}/ar
 find_program(ANDROIDDEPLOYQT_EXECUTABLE androiddeployqt HINTS "${QT_HOST_PATH}/tools/Qt6/bin")
 
 set(CPACK_GENERATOR)
-set(CPACK_PACKAGE_EXECUTABLES qfield;QField)
+set(CPACK_PACKAGE_EXECUTABLES sigpac-go;SIGPAC-Go)  # Changed from qfield;QField
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://qfield.org")
-# set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/images/icons/qfield_logo.png")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_VENDOR "OPENGIS.ch")
-# set(CPACK_STRIP_FILES TRUE)
 set(CPACK_PACKAGE_VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
+
 
 function(macdeployqt bundle targetdir _PACKAGER)
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/CPackMacDeployQt-${_PACKAGER}.cmake
@@ -48,10 +47,10 @@ set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
 
 add_custom_target(bundle
-                  COMMAND ${CMAKE_CPACK_COMMAND} "--config" "${CMAKE_BINARY_DIR}/BundleConfig.cmake"
-                  COMMENT "Running CPACK. Please wait..."
-                  DEPENDS qfield)
-
+                 COMMAND ${CMAKE_CPACK_COMMAND} "--config" "${CMAKE_BINARY_DIR}/BundleConfig.cmake"
+                 COMMENT "Running CPACK. Please wait..."
+                 DEPENDS sigpac-go)  
+				 
 # Qt IFW packaging framework
 if(BINARYCREATOR_EXECUTABLE)
     list(APPEND CPACK_GENERATOR IFW)
