@@ -117,41 +117,40 @@ jobs:
           wget https://repo1.maven.org/maven2/io/sentry/sentry-android-ndk/7.19.1/sentry-android-ndk-7.19.1.aar -O /tmp/sentry.zip
           unzip /tmp/sentry.zip -d /tmp/sentry-android-ndk
           
-      - name: Install QCA with shared libraries
+      - name: Setup vcpkg with QCA
         run: |
           echo "Setting up vcpkg properly..."
           # Remove any partial vcpkg setup
           rm -rf vcpkg
           
-          # Clone the entire vcpkg repository (with full history for proper bootstrapping)
+          # Clone the entire vcpkg repository
           git clone https://github.com/microsoft/vcpkg.git
           
-          # Run bootstrap directly
+          # Run bootstrap
           cd vcpkg
-          echo "Running bootstrap-vcpkg.sh..."
           ./bootstrap-vcpkg.sh
           cd ..
           
-          # Verify vcpkg executable exists
+          # Verify vcpkg was properly bootstrapped
           if [ ! -f "./vcpkg/vcpkg" ]; then
             echo "Error: bootstrap failed, vcpkg executable not created"
             exit 1
           fi
           
-          echo "vcpkg bootstrapped successfully. Installing QCA..."
+          echo "vcpkg bootstrapped successfully."
           
-          # Install QCA with proper syntax
-          ./vcpkg/vcpkg install qca[ossl] --triplet=arm64-android
+          # Check if QCA already has ossl feature in vcpkg.json
+          QCA_WITH_OSSL=$(grep -c '"name": "qca".*"features": \["ossl"\]' vcpkg.json || true)
           
-          # Create a custom triplets file to ensure shared libraries are used
-          mkdir -p vcpkg/triplets/custom
-          echo "set(VCPKG_TARGET_ARCHITECTURE arm64)" > vcpkg/triplets/custom/arm64-android-shared.cmake
-          echo "set(VCPKG_CRT_LINKAGE dynamic)" >> vcpkg/triplets/custom/arm64-android-shared.cmake
-          echo "set(VCPKG_LIBRARY_LINKAGE shared)" >> vcpkg/triplets/custom/arm64-android-shared.cmake
-          echo "set(VCPKG_CMAKE_SYSTEM_NAME Android)" >> vcpkg/triplets/custom/arm64-android-shared.cmake
-          
-          # Install again with the custom triplet to ensure shared libraries
-          ./vcpkg/vcpkg install qca[ossl] --triplet=arm64-android-shared
+          if [ "$QCA_WITH_OSSL" -eq 0 ]; then
+            echo "QCA with OSSL feature not found in vcpkg.json, installing vcpkg dependencies..."
+            
+            # Use --triplet instead of trying to modify vcpkg.json directly
+            VCPKG_FEATURE_FLAGS="manifests,registries" ./vcpkg/vcpkg install --triplet=${{ matrix.triplet }}
+          else
+            echo "QCA with OSSL feature found in vcpkg.json, installing vcpkg dependencies..."
+            VCPKG_FEATURE_FLAGS="manifests,registries" ./vcpkg/vcpkg install --triplet=${{ matrix.triplet }}
+          fi
           
           # Verify the installation
           echo "QCA installation complete. Verifying files:"
@@ -303,4 +302,3 @@ jobs:
               qfield-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-x86.apk
         env:
           GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
-
