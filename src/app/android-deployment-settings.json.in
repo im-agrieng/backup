@@ -15,7 +15,7 @@
     "sdkBuildToolsRevision": "@ANDROID_BUILD_TOOLS_VERSION@",
     "extraPrefixDirs": [ 
         "@CMAKE_INSTALL_PREFIX@",
-        "@QCA_DIR@"
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@"
     ],
     "android-extra-plugins": [
         "plugins/crypto/libqca-ossl.so"
@@ -25,12 +25,5 @@
         "lib/libcrypto.so",
         "lib/libssl.so",
         "lib/libqca.so"
-    ],
-    "android-extra-permissions": [
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.CAMERA",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.READ_EXTERNAL_STORAGE"
     ]
 }

@@ -49,29 +49,36 @@ function(create_executable)
      @ONLY
 	)
   endif()
+  
+  if(WITH_VCPKG)
+    # Set QCA paths for vcpkg
+    set(QCA_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/cmake/Qca")
+    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QCA_DIR})
+    find_package(Qca REQUIRED)
+  endif()
 
   if(ANDROID)
-    qt_add_executable(sigpac-go ${APP_SOURCES})
+    qt_add_executable(${exe_TARGET} ${APP_SOURCES})  # Use ${exe_TARGET} instead of hardcoded name
     
     # Android-specific configurations
-    set_property(TARGET sigpac-go PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-                                         ${ANDROID_PACKAGE_SOURCE_DIR})
-    set_property(TARGET sigpac-go PROPERTY QT_QML_IMPORT_PATH
-                                         $ENV{Qt6_DIR}/qml)
-    set_property(TARGET sigpac-go PROPERTY QT_QML_ROOT_PATH
-                                         ${CMAKE_SOURCE_DIR}/src/qml)
+    set_property(TARGET ${exe_TARGET} PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+                                          ${ANDROID_PACKAGE_SOURCE_DIR})
+    set_property(TARGET ${exe_TARGET} PROPERTY QT_QML_IMPORT_PATH
+                                          $ENV{Qt6_DIR}/qml)
+    set_property(TARGET ${exe_TARGET} PROPERTY QT_QML_ROOT_PATH
+                                          ${CMAKE_SOURCE_DIR}/src/qml)
 
     if(WITH_VCPKG)
-    find_package(Qca REQUIRED)
-    target_link_libraries(${exe_TARGET} PRIVATE Qca::Qca)
-	endif()
-	
-	set_target_properties(sigpac-go PROPERTIES
+        find_package(Qca REQUIRED)
+        target_link_libraries(${exe_TARGET} PRIVATE Qca::Qca)
+    endif()
+    
+    set_target_properties(${exe_TARGET} PROPERTIES
         QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/android-sigpac-go-deployment-settings.json
     )
 
     set(PROJECT_NAME ${exe_TARGET})
-  else()
+	else()
     add_executable(${exe_TARGET} ${exe_EXTRA_ARGS} ${APP_SOURCES})
   endif()
 
