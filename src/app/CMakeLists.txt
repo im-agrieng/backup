@@ -58,6 +58,9 @@ configure_file(${CMAKE_SOURCE_DIR}/images/logo.qrc.in
 # Set the correct application binary name for Android
 set(QT_ANDROID_APPLICATION_BINARY "sigpac-go")
 
+add_executable(sigpac-go ${APP_SOURCES}) # Define the executable
+target_link_libraries(sigpac-go  Qt::Core Qt::Gui) # Link required libraries
+
 # Define main executable creation function
 function(create_executable)
     cmake_parse_arguments(exe "" "TARGET" "EXTRA_ARGS" "" ${ARGN})
@@ -208,12 +211,3 @@ function(create_executable)
     # Link additional Qt plugins
     qt_import_plugins(${exe_TARGET} INCLUDE Qt::QSvgPlugin)
 
-    # Platform-specific configurations
-    if(IOS OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        target_link_libraries(
-            ${exe_TARGET}
-            PUBLIC Qt6::QDarwinCameraPermissionPlugin
-                   Qt6::QDarwinMicrophonePermissionPlugin
-                   Qt6::QDarwinLocationPermissionPlugin)
-        qt_import_plugins(
-            ${exe_TARGET} INCLUDE
