@@ -1,5 +1,9 @@
+# Find required Qt packages
 find_package(Qt6QuickCompiler QUIET)
+find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
+find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
 
+# Configure platform-specific settings
 if(MSVC)
   configure_file("${CMAKE_SOURCE_DIR}/platform/windows/appicon.rc.in"
                  "${CMAKE_CURRENT_BINARY_DIR}/appicon.rc")
@@ -7,54 +11,62 @@ if(MSVC)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  set(qfield_ICON ${CMAKE_SOURCE_DIR}/platform/macos/qfield_logo.icns)
-  set_source_files_properties(${qfield_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION
-                                                        "Resources")
-  list(APPEND RESOURCES ${qfield_ICON})
+  set(APP_ICON ${CMAKE_SOURCE_DIR}/platform/macos/sigpac_logo.icns)
+  set_source_files_properties(${APP_ICON} PROPERTIES 
+                             MACOSX_PACKAGE_LOCATION "Resources")
+  list(APPEND RESOURCES ${APP_ICON})
 endif()
 
-# lrelease .ts files
-find_package(Qt6 COMPONENTS LinguistTools)
-
-# include manually copied .qm files
+# Include manually copied .qm files
 file(GLOB QM_FILES_MANUAL ${CMAKE_SOURCE_DIR}/i18n/*.qm)
 
+# Configure logo resource
 configure_file(${CMAKE_SOURCE_DIR}/images/logo.qrc.in
                ${CMAKE_BINARY_DIR}/images/logo.qrc @ONLY)
 
-find_package(
-  Qt6
-  COMPONENTS Core5Compat
-  REQUIRED)
-
+# Define main executable creation function
 function(create_executable)
   cmake_parse_arguments(exe "" "TARGET" "EXTRA_ARGS" "" ${ARGN})
 
-  set(QFIELD_SOURCES
-      main.cpp ${RESOURCES} ${CMAKE_SOURCE_DIR}/images/images.qrc
+  # Define source files
+  set(APP_SOURCES
+      main.cpp 
+      ${RESOURCES} 
+      ${CMAKE_SOURCE_DIR}/images/images.qrc
       ${CMAKE_BINARY_DIR}/images/logo.qrc
-      ${CMAKE_SOURCE_DIR}/resources/resources.qrc ${ICON_SRC})
+      ${CMAKE_SOURCE_DIR}/resources/resources.qrc 
+      ${ICON_SRC})
 
   if(ANDROID)
-    qt_add_executable(sigpac-go ${QFIELD_SOURCES})
+    qt_add_executable(sigpac-go ${APP_SOURCES})
+    
+    # Android-specific configurations
     set_property(TARGET sigpac-go PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-                                               ${ANDROID_PACKAGE_SOURCE_DIR})
-    set_property(TARGET ${exe_TARGET} PROPERTY QT_QML_IMPORT_PATH
-                                               $ENV{Qt6_DIR}/qml)
-    set_property(TARGET ${exe_TARGET} PROPERTY QT_QML_ROOT_PATH
-                                               ${CMAKE_SOURCE_DIR}/src/qml)
+                                         ${ANDROID_PACKAGE_SOURCE_DIR})
+    set_property(TARGET sigpac-go PROPERTY QT_QML_IMPORT_PATH
+                                         $ENV{Qt6_DIR}/qml)
+    set_property(TARGET sigpac-go PROPERTY QT_QML_ROOT_PATH
+                                         ${CMAKE_SOURCE_DIR}/src/qml)
+
+    # Generate Android deployment settings
+    qt_android_generate_deployment_settings(sigpac-go)
+    set_target_properties(sigpac-go PROPERTIES
+        QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/android-sigpac-go-deployment-settings.json
+    )
 
     set(PROJECT_NAME ${exe_TARGET})
   else()
-    add_executable(${exe_TARGET} ${exe_EXTRA_ARGS} ${QFIELD_SOURCES})
+    add_executable(${exe_TARGET} ${exe_EXTRA_ARGS} ${APP_SOURCES})
   endif()
 
+  # Translation files
   file(GLOB TS_FILES ${CMAKE_SOURCE_DIR}/i18n/*.ts)
   set_source_files_properties(
     ${TS_FILES} PROPERTIES OUTPUT_LOCATION
                            "${CMAKE_BINARY_DIR}/i18n${exe_TARGET}")
   qt_add_translation(QM_FILES ${TS_FILES})
 
+  # Add translations as resources
   qt_add_resources(
     ${exe_TARGET}
     "translations${exe_TARGET}"
@@ -65,6 +77,7 @@ function(create_executable)
     FILES
     ${QM_FILES})
 
+  # Link required libraries
   target_link_libraries(${exe_TARGET} PRIVATE qfield_core qfield_qml)
 
   if(ANDROID)
@@ -75,17 +88,16 @@ function(create_executable)
     target_link_libraries(${exe_TARGET} PRIVATE qfield_sentry)
   endif()
 
+  # Handle static builds
   get_target_property(QT_TARGET_TYPE Qt::Core TYPE)
-  # This should be in src/qml/CMakeLists.txt but that's not possible with Qt5.
-  # Retry with Qt6 Same is in tests/CMakeLists.txt
-  # https://bugreports.qt.io/browse/QTBUG-80847
   if(${QT_TARGET_TYPE} STREQUAL "STATIC_LIBRARY")
     find_package(Qt6 COMPONENTS QmlImportScanner)
 
-    get_target_property(qfield_qmlfiles qfield_qml QML_FILES)
-    file(COPY ${qfield_qmlfiles}
+    get_target_property(qml_files qfield_qml QML_FILES)
+    file(COPY ${qml_files}
          DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/qmldrop/app")
 
+    # Remove optional feature files if not enabled
     if(NOT WITH_BLUETOOTH)
       file(REMOVE
            "${CMAKE_CURRENT_BINARY_DIR}/qmldrop/app/BluetoothDeviceChooser.qml")
@@ -95,14 +107,16 @@ function(create_executable)
            "${CMAKE_CURRENT_BINARY_DIR}/qmldrop/app/SerialPortChooser.qml")
     endif()
 
-    # Will be no longer needed for Qt6
     qt_import_qml_plugins(${exe_TARGET} PATH_TO_SCAN
                           "${CMAKE_CURRENT_BINARY_DIR}/qmldrop/app")
   endif()
+
+  # Link additional Qt modules and plugins
   target_link_libraries(${exe_TARGET} PUBLIC Qt::Core5Compat)
   qt_import_plugins(${exe_TARGET} INCLUDE Qt::QSvgPlugin)
   qt_import_plugins(${exe_TARGET} INCLUDE Qt::Core5Compat)
 
+  # Platform-specific configurations
   if(IOS OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_link_libraries(
       ${exe_TARGET}
@@ -115,53 +129,57 @@ function(create_executable)
       Qt6::QDarwinLocationPermissionPlugin)
   endif()
 
-  if(WITH_VCPKG) # this triggers the initialisation of static qca ossl plugin.
+  if(WITH_VCPKG)
     target_compile_definitions(${exe_TARGET} PUBLIC HAVE_STATIC_QCA_PLUGINS)
   endif()
 
+  # Set common target properties
   set_target_properties(${exe_TARGET} PROPERTIES AUTORCC TRUE)
+
+  # macOS specific settings
   if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    # Handles platform-specific tasks, including insuring permission plugins
     qt_finalize_executable(sigpac-go)
 
     set_target_properties(
       ${exe_TARGET}
-      PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
-                 MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} OPENGIS.ch"
-                 MACOSX_BUNDLE_ICON_FILE "qfield_logo.icns"
-                 MACOSX_BUNDLE_GUI_IDENTIFIER "${PROJECT_NAME}"
-                 MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
-                 MACOSX_BUNDLE_SHORT_VERSION_STRING
-                 "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
-                 MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-                 MACOSX_BUNDLE_COPYRIGHT "Copyright (c) OPENGIS.ch")
+      PROPERTIES 
+        MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
+        MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} SIGPAC"
+        MACOSX_BUNDLE_ICON_FILE "sigpac_logo.icns"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "${PROJECT_NAME}"
+        MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING
+        "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_COPYRIGHT "Copyright (c) SIGPAC")
   endif()
 endfunction()
 
+# Create the main executable
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   set(EXTRA_ARGS MACOSX_BUNDLE)
 endif()
 create_executable(TARGET sigpac-go EXTRA_ARGS ${EXTRA_ARGS})
 
+# Add test executable if enabled
 if(WITH_SPIX)
-  create_executable(TARGET qfield_spix)
-  target_link_libraries(qfield_spix PRIVATE Spix::Spix)
-  target_compile_definitions(qfield_spix PUBLIC WITH_SPIX)
+  create_executable(TARGET sigpac_spix)
+  target_link_libraries(sigpac_spix PRIVATE Spix::Spix)
+  target_compile_definitions(sigpac_spix PUBLIC WITH_SPIX)
 endif()
 
+# Installation configuration
 install(
   TARGETS sigpac-go
-  BUNDLE DESTINATION ${QFIELD_BIN_DIR}
-  RUNTIME DESTINATION ${QFIELD_BIN_DIR}
-  LIBRARY DESTINATION ${QFIELD_LIB_DIR}
-  ARCHIVE DESTINATION ${QFIELD_LIB_DIR}
-  FRAMEWORK DESTINATION ${QFIELD_FW_SUBDIR}
-  PUBLIC_HEADER DESTINATION ${QFIELD_INCLUDE_DIR})
+  BUNDLE DESTINATION ${SIGPAC_BIN_DIR}
+  RUNTIME DESTINATION ${SIGPAC_BIN_DIR}
+  LIBRARY DESTINATION ${SIGPAC_LIB_DIR}
+  ARCHIVE DESTINATION ${SIGPAC_LIB_DIR}
+  FRAMEWORK DESTINATION ${SIGPAC_FW_SUBDIR}
+  PUBLIC_HEADER DESTINATION ${SIGPAC_INCLUDE_DIR})
 
+# iOS specific configuration
 if(IOS)
-  # QFIELD_APP_ICON_SUFFIX should be set from command line to either _pr or
-  # _beta
-
   include("${CMAKE_SOURCE_DIR}/cmake/AddQtIosApp.cmake")
   add_qt_ios_app(
     sigpac-go
@@ -170,7 +188,7 @@ if(IOS)
     SHORT_VERSION "${APK_VERSION_CODE}"
     LONG_VERSION "${APK_VERSION_CODE}"
     ASSET_DIR "${PROJECT_SOURCE_DIR}/platform/ios/Assets.xcassets"
-    CATALOG_APPICON "AppIcon${QFIELD_APP_ICON_SUFFIX}"
+    CATALOG_APPICON "AppIcon${APP_ICON_SUFFIX}"
     LAUNCHSCREEN_STORYBOARD
       "${PROJECT_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
     RESOURCE_FILES "${SHARE_DIR}"

@@ -7,7 +7,8 @@ if(NOT "$ENV{KEYNAME}" STREQUAL ""
       --sign @CMAKE_SOURCE_DIR@/keystore.p12 "$ENV{KEYNAME}"
       --storepass "$ENV{STOREPASS}"
       --keypass "$ENV{KEYPASS}"
-      --input @CMAKE_BINARY_DIR@/src/app/android-qfield-deployment-settings.json
+      # Update the deployment settings file name
+      --input @CMAKE_BINARY_DIR@/src/app/android-sigpac-go-deployment-settings.json
       --output @CMAKE_BINARY_DIR@/src/app/android-build
       --deployment bundled
       --android-platform android-@ANDROID_TARGET_PLATFORM@
@@ -30,7 +31,8 @@ else()
   execute_process(
     COMMAND
       "@ANDROIDDEPLOYQT_EXECUTABLE@"
-      --input @CMAKE_BINARY_DIR@/src/app/android-qfield-deployment-settings.json
+      # Update the deployment settings file name here too
+      --input @CMAKE_BINARY_DIR@/src/app/android-sigpac-go-deployment-settings.json
       --output @CMAKE_BINARY_DIR@/src/app/android-build
       --deployment bundled
       --android-platform android-@ANDROID_TARGET_PLATFORM@
