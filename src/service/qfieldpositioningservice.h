@@ -2,9 +2,9 @@
   qFieldpositioningservice.h - QFieldPositioningService
 
  ---------------------
- begin                : 21.12.2024
- copyright            : (C) 2024 by Mathieu Pellerin
- email                : mathieu at opengis dot ch
+  begin                : 21.12.2024
+  copyright            : (C) 2024 by Mathieu Pellerin
+  email                : mathieu at opengis dot ch
  ***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,7 +17,7 @@
 #define QFIELDPOSITIONINGSERVICE_H
 
 #include "positioningsource.h"
-#include "qfield_service_export.h"
+#include "sigpac-go_service_export.h"  // Updated to use new export header
 
 #include <QRemoteObjectHost>
 #include <QTimer>
@@ -25,6 +25,11 @@
 #include <QtGlobal>
 
 class PositioningSource;
+
+// Define compatibility macro if needed
+#ifdef SIGPAC_GO_SERVICE_EXPORT
+#define QFIELD_SERVICE_EXPORT SIGPAC_GO_SERVICE_EXPORT
+#endif
 
 class QFIELD_SERVICE_EXPORT QFieldPositioningService : public QAndroidService
 {
