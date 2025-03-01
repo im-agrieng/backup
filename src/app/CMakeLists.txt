@@ -37,6 +37,9 @@ file(GLOB QM_FILES_MANUAL ${CMAKE_SOURCE_DIR}/i18n/*.qm)
 configure_file(${CMAKE_SOURCE_DIR}/images/logo.qrc.in
                ${CMAKE_BINARY_DIR}/images/logo.qrc @ONLY)
 
+# Set the correct application binary name for Android
+set(QT_ANDROID_APPLICATION_BINARY "sigpac-go")
+
 # Define main executable creation function
 function(create_executable)
     cmake_parse_arguments(exe "" "TARGET" "EXTRA_ARGS" "" ${ARGN})
@@ -73,6 +76,15 @@ function(create_executable)
             # QCA configuration for Android
             target_include_directories(${exe_TARGET} PRIVATE 
                 ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include)
+            
+            # Check if QCA library exists and provide helpful error if it doesn't
+            if(NOT EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+                message(FATAL_ERROR "QCA library not found at ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so. 
+                Please make sure QCA is properly installed for ${VCPKG_TARGET_TRIPLET} by running:
+                vcpkg install qca:arm64-android --features=ossl")
+            endif()
+            
+            # Link with full paths to ensure correct libraries are found
             target_link_libraries(${exe_TARGET} PRIVATE 
                 ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so
                 ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so
@@ -81,8 +93,13 @@ function(create_executable)
             # Add QCA plugins path for Android
             set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_PLUGINS 
                         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins")
+            
+            # Add all required libraries to Android extras with absolute paths
             set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so"
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so"
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so"
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libz.so")
         endif()
         
         set_target_properties(${exe_TARGET} PROPERTIES

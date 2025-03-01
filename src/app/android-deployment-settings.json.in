@@ -7,8 +7,8 @@
     "tool-prefix": "@ANDROID_TOOLCHAIN_MACHINE_NAME@",
     "ndk-host": "@ANDROID_NDK_HOST_SYSTEM_NAME@",
     "target-architecture": "@ANDROID_ABI@",
-    "application-binary": "@ANDROID_APP_BINARY@",
-    "android-package": "ch.opengis.qfield_dev",
+    "application-binary": "sigpac-go",
+    "android-package": "ch.opengis.sigpac_go_dev",
     "android-app-name": "@APP_NAME@",
     "qml-root-path": "@CMAKE_SOURCE_DIR@",
     "stdcpp-path": "@ANDROID_STDCPP_PATH@",
@@ -18,16 +18,14 @@
         "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@"
     ],
     "android-extra-plugins": [
-        "plugins/crypto/libqca-ossl.so",
-        "plugins/platforms/libplugins_platforms_qtforandroid_armeabi-v7a.so"
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/plugins/crypto/libqca-ossl.so"
     ],
     "android-extra-libs": [
-        "lib/libqca.so",
-        "lib/libcrypto.so",
-        "lib/libssl.so",
-        "lib/libz.so"
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib/libqca.so",
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib/libcrypto.so",
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib/libssl.so",
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib/libz.so"
     ],
     "android-extra-libexec": [
         "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib"
     ]
-}
