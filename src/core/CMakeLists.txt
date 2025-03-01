@@ -297,7 +297,7 @@ add_library(qfield_core STATIC ${QFIELD_CORE_SRCS} ${QFIELD_CORE_HDRS})
 if(ANDROID)
   # Set the correct library name for Android
   set_target_properties(qfield_core PROPERTIES 
-    OUTPUT_NAME "sig_${ANDROID_ABI}"
+    OUTPUT_NAME "qfield_${ANDROID_ABI}"
   )
 endif()
 
