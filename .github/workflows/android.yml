@@ -117,7 +117,10 @@ jobs:
           wget https://repo1.maven.org/maven2/io/sentry/sentry-android-ndk/7.19.1/sentry-android-ndk-7.19.1.aar -O /tmp/sentry.zip
           unzip /tmp/sentry.zip -d /tmp/sentry-android-ndk
           
-         
+      - name: Install QCA with shared libraries
+        run: |
+           ./vcpkg/vcpkg install qca:arm64-android --features=ossl --buildtype=release --options=qt-shared-libs=ON
+           
       - name: 🌱 Install dependencies and generate project files
         env:
           WORKSPACE: ${{ github.workspace }}

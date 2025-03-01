@@ -1,5 +1,4 @@
-buildscript {
-    ext {
+ext {
         buildToolsVersion = "@ANDROID_BUILD_TOOLS_VERSION@"
         minSdkVersion = @ANDROID_PLATFORM_INT@
         compileSdkVersion = @ANDROID_TARGET_PLATFORM@

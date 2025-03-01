@@ -1,19 +1,37 @@
 # Find required Qt packages
+find_package(Qt6 COMPONENTS Core Gui Qml Quick Widgets LinguistTools Core5Compat REQUIRED)
 find_package(Qt6QuickCompiler QUIET)
-find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
-find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
 
 if(POLICY QTP0002)
     qt_policy(SET QTP0002 NEW)
 endif()
 
+# Find OpenSSL and ZLIB for crypto support
+find_package(ZLIB REQUIRED)
+find_package(OpenSSL REQUIRED)
+
+# Configure QCA paths and find package
 if(WITH_VCPKG)
     # Set QCA paths for vcpkg
     set(QCA_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/cmake/Qca")
     set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QCA_DIR})
     find_package(Qca REQUIRED)
-    message(STATUS "Found QCA: ${QCA_DIR}")
-    message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+    message(STATUS "Found Qca: ${QCA_DIR}")
+    
+    # Check if QCA is available as shared or static library
+    if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+        message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+        set(QCA_LIB_TYPE "SHARED")
+        set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+    elseif(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+        message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+        set(QCA_LIB_TYPE "STATIC")
+        set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+    else()
+        message(FATAL_ERROR "QCA library not found at ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/. 
+        Please make sure QCA is properly installed for ${VCPKG_TARGET_TRIPLET} by running:
+        vcpkg install qca:${VCPKG_TARGET_TRIPLET} --features=ossl --buildtype=release --options=qt-shared-libs=ON")
+    endif()
 endif()
 
 # Configure platform-specific settings
@@ -53,6 +71,7 @@ function(create_executable)
         ${CMAKE_SOURCE_DIR}/resources/resources.qrc 
         ${ICON_SRC})
 
+    # Configure Android deployment settings
     if(ANDROID)
         configure_file(
             "${CMAKE_CURRENT_SOURCE_DIR}/android-deployment-settings.json.in"
@@ -61,6 +80,7 @@ function(create_executable)
         )
     endif()
 
+    # Create executable differently based on platform
     if(ANDROID)
         qt_add_executable(${exe_TARGET} ${APP_SOURCES})
         
@@ -77,36 +97,48 @@ function(create_executable)
             target_include_directories(${exe_TARGET} PRIVATE 
                 ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include)
             
-            # Check if QCA library exists and provide helpful error if it doesn't
-            if(NOT EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-                message(FATAL_ERROR "QCA library not found at ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so. 
-                Please make sure QCA is properly installed for ${VCPKG_TARGET_TRIPLET} by running:
-                vcpkg install qca:arm64-android --features=ossl")
+            # Link with appropriate library (static or shared)
+            if(QCA_LIB_TYPE STREQUAL "SHARED")
+                target_link_libraries(${exe_TARGET} PRIVATE 
+                    ${QCA_LIBRARY}
+                    ${OPENSSL_CRYPTO_LIBRARY}
+                    ${OPENSSL_SSL_LIBRARY}
+                    ${ZLIB_LIBRARIES})
+                    
+                # Add QCA plugins path for Android
+                if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins/crypto")
+                    set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_PLUGINS 
+                                "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins")
+                endif()
+                
+                # Add all required libraries to Android extras
+                set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
+                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so"
+                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so"
+                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so"
+                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libz.so")
+            else()
+                # Static library configuration
+                target_link_libraries(${exe_TARGET} PRIVATE 
+                    ${QCA_LIBRARY}
+                    ${OPENSSL_CRYPTO_LIBRARY}
+                    ${OPENSSL_SSL_LIBRARY}
+                    ${ZLIB_LIBRARIES})
+                
+                # For static builds, we need to define this macro
+                target_compile_definitions(${exe_TARGET} PRIVATE HAVE_STATIC_QCA_PLUGINS)
+                
+                # Add just the dependencies to Android extras (no QCA since it's static)
+                set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
+                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so"
+                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so"
+                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libz.so")
             endif()
-            
-            # Link with full paths to ensure correct libraries are found
-            target_link_libraries(${exe_TARGET} PRIVATE 
-                ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so
-                ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so
-                ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so)
-            
-            # Add QCA plugins path for Android
-            set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_PLUGINS 
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins")
-            
-            # Add all required libraries to Android extras with absolute paths
-            set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so"
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so"
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so"
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libz.so")
         endif()
         
         set_target_properties(${exe_TARGET} PROPERTIES
-            QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/android-sigpac-go-deployment-settings.json
+            QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_BINARY_DIR}/src/app/android-sigpac-go-deployment-settings.json
         )
-
-        set(PROJECT_NAME ${exe_TARGET})
     else()
         add_executable(${exe_TARGET} ${exe_EXTRA_ARGS} ${APP_SOURCES})
     endif()
@@ -130,7 +162,17 @@ function(create_executable)
         ${QM_FILES})
 
     # Link required libraries
-    target_link_libraries(${exe_TARGET} PRIVATE qfield_core qfield_qml)
+    target_link_libraries(${exe_TARGET} 
+        PRIVATE 
+        qfield_core 
+        qfield_qml
+        Qt::Core
+        Qt::Gui
+        Qt::Qml
+        Qt::Quick
+        Qt::Widgets
+        Qt::Core5Compat
+    )
 
     if(ANDROID)
         target_link_libraries(${exe_TARGET} PRIVATE sigpac-go_service)
@@ -163,10 +205,8 @@ function(create_executable)
                              "${CMAKE_CURRENT_BINARY_DIR}/qmldrop/app")
     endif()
 
-    # Link additional Qt modules and plugins
-    target_link_libraries(${exe_TARGET} PUBLIC Qt::Core5Compat)
+    # Link additional Qt plugins
     qt_import_plugins(${exe_TARGET} INCLUDE Qt::QSvgPlugin)
-    qt_import_plugins(${exe_TARGET} INCLUDE Qt::Core5Compat)
 
     # Platform-specific configurations
     if(IOS OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -176,83 +216,4 @@ function(create_executable)
                    Qt6::QDarwinMicrophonePermissionPlugin
                    Qt6::QDarwinLocationPermissionPlugin)
         qt_import_plugins(
-            ${exe_TARGET} INCLUDE Qt6::QDarwinCameraPermissionPlugin
-            Qt6::QDarwinMicrophonePermissionPlugin
-            Qt6::QDarwinLocationPermissionPlugin)
-    endif()
-
-    if(WITH_VCPKG)
-        target_compile_definitions(${exe_TARGET} PUBLIC HAVE_STATIC_QCA_PLUGINS)
-    endif()
-
-    # Set common target properties
-    set_target_properties(${exe_TARGET} PROPERTIES AUTORCC TRUE)
-
-    # macOS specific settings
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        qt_finalize_executable(sigpac-go)
-
-        set_target_properties(
-            ${exe_TARGET}
-            PROPERTIES 
-                MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
-                MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} SIGPAC"
-                MACOSX_BUNDLE_ICON_FILE "sigpac_logo.icns"
-                MACOSX_BUNDLE_GUI_IDENTIFIER "${PROJECT_NAME}"
-                MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
-                MACOSX_BUNDLE_SHORT_VERSION_STRING
-                "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
-                MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-                MACOSX_BUNDLE_COPYRIGHT "Copyright (c) SIGPAC")
-    endif()
-endfunction()
-
-# Create the main executable
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(EXTRA_ARGS MACOSX_BUNDLE)
-endif()
-create_executable(TARGET sigpac-go EXTRA_ARGS ${EXTRA_ARGS})
-
-# Add test executable if enabled
-if(WITH_SPIX)
-    create_executable(TARGET sigpac_spix)
-    target_link_libraries(sigpac_spix PRIVATE Spix::Spix)
-    target_compile_definitions(sigpac_spix PUBLIC WITH_SPIX)
-endif()
-
-# Installation configuration
-install(
-    TARGETS sigpac-go
-    BUNDLE DESTINATION ${SIGPAC_BIN_DIR}
-    RUNTIME DESTINATION ${SIGPAC_BIN_DIR}
-    LIBRARY DESTINATION ${SIGPAC_LIB_DIR}
-    ARCHIVE DESTINATION ${SIGPAC_LIB_DIR}
-    FRAMEWORK DESTINATION ${SIGPAC_FW_SUBDIR}
-    PUBLIC_HEADER DESTINATION ${SIGPAC_INCLUDE_DIR})
-
-# iOS specific configuration
-if(IOS)
-    include("${CMAKE_SOURCE_DIR}/cmake/AddQtIosApp.cmake")
-    add_qt_ios_app(
-        sigpac-go
-        NAME "SIGPAC-Go"
-        VERSION "${APK_VERSION_CODE}"
-        SHORT_VERSION "${APK_VERSION_CODE}"
-        LONG_VERSION "${APK_VERSION_CODE}"
-        ASSET_DIR "${PROJECT_SOURCE_DIR}/platform/ios/Assets.xcassets"
-        CATALOG_APPICON "AppIcon${APP_ICON_SUFFIX}"
-        LAUNCHSCREEN_STORYBOARD
-            "${PROJECT_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
-        RESOURCE_FILES "${SHARE_DIR}"
-        CUSTOM_PLIST "${PROJECT_SOURCE_DIR}/platform/ios/Info.plist.in"
-        BUNDLE_IDENTIFIER "${IOS_APP_IDENTIFIER}"
-        ORIENTATION_PORTRAIT
-        ORIENTATION_PORTRAIT_UPDOWN
-        ORIENTATION_LANDSCAPE_LEFT
-        ORIENTATION_LANDSCAPE_RIGHT
-        REQUIRES_FULL_SCREEN
-        HIDDEN_STATUS_BAR
-        IPA
-        UPLOAD_SYMBOL
-        VERBOSE)
-endif()
+            ${exe_TARGET} INCLUDE
