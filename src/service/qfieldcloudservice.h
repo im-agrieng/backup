@@ -21,6 +21,11 @@
 #include <QtCore/private/qandroidextras_p.h>
 #include <QtGlobal>
 
+// export macro to match the new library
+#ifdef SIGPAC_GO_SERVICE_EXPORT
+#define QFIELD_SERVICE_EXPORT SIGPAC_GO_SERVICE_EXPORT
+#endif
+
 class QFIELD_SERVICE_EXPORT QFieldCloudService : public QAndroidService
 {
     Q_OBJECT

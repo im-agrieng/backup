@@ -7,18 +7,26 @@ set(SIGPAC_LIB_DIR "${QFIELD_LIB_DIR}" CACHE PATH "Library installation director
 set(SIGPAC_INCLUDE_DIR "${QFIELD_INCLUDE_DIR}" CACHE PATH "Include installation directory")
 set(SIGPAC_FW_SUBDIR "${QFIELD_FW_SUBDIR}" CACHE PATH "Framework installation subdirectory")
 
-# Add library with new name but maintain QField compatibility
+#library with new name
 add_library(sigpac-go_service STATIC ${QFIELD_SERVICE_SRCS} ${QFIELD_SERVICE_HDRS})
 
-# Generate export header with QField naming to maintain compatibility with existing includes
+# Generate both export headers to maintain compatibility during transition
 include(GenerateExportHeader)
 generate_export_header(sigpac-go_service
-    BASE_NAME qfield_service
-    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h)
+    BASE_NAME sigpac_go_service
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/sigpac-go_service_export.h)
 
-# Make sure both build and source directories are in include path
+# Create a compatibility symlink or copy
+configure_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/sigpac-go_service_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h
+    COPYONLY
+)
+
 target_include_directories(sigpac-go_service SYSTEM
-                         PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+                         PUBLIC 
+                         ${CMAKE_CURRENT_BINARY_DIR}
+                         ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_include_directories(sigpac-go_service
                          PUBLIC ${CMAKE_SOURCE_DIR}/src/service)
@@ -27,7 +35,7 @@ target_compile_features(sigpac-go_service PUBLIC cxx_std_17)
 
 set_target_properties(sigpac-go_service PROPERTIES 
     AUTOMOC TRUE
-    OUTPUT_NAME "sigpac-go_service"  # Ensure output name matches new naming
+    OUTPUT_NAME "sigpac-go_service"
 )
 
 target_link_libraries(sigpac-go_service PRIVATE qfield_core ${QGIS_CORE_LIBRARY})
@@ -35,9 +43,10 @@ target_link_libraries(sigpac-go_service PRIVATE qfield_core ${QGIS_CORE_LIBRARY}
 target_link_libraries(sigpac-go_service PUBLIC Qt::Core Qt::Positioning
                                             Qt::CorePrivate)
 
-# Install the export header along with other headers
+# Install both export headers
 install(FILES 
     ${QFIELD_SERVICE_HDRS}
+    ${CMAKE_CURRENT_BINARY_DIR}/sigpac-go_service_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h
     DESTINATION ${SIGPAC_INCLUDE_DIR}
 )
@@ -51,7 +60,6 @@ install(
   FRAMEWORK DESTINATION ${SIGPAC_FW_SUBDIR}
   PUBLIC_HEADER DESTINATION ${SIGPAC_INCLUDE_DIR})
 
-# Configure and install package config
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/sigpac-go-config.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/sigpac-go-config.cmake"
