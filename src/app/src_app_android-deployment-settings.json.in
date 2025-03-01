@@ -1,0 +1,24 @@
+{
+  "description": "This file is generated from android-deployment-settings.json.in",
+  "qt": "@QT_ANDROID_QT_ROOT@",
+  "sdk": "@ANDROID_SDK_ROOT@",
+  "ndk": "@ANDROID_NDK@",
+  "toolchain-prefix": "@ANDROID_TOOLCHAIN_MACHINE_NAME@",
+  "tool-prefix": "@ANDROID_TOOLCHAIN_MACHINE_NAME@",
+  "toolchain-version": "@ANDROID_COMPILER_VERSION@",
+  "ndk-host": "@ANDROID_NDK_HOST_SYSTEM_NAME@",
+  "target-architecture": "@ANDROID_ABI@",
+  "application-binary": "@ANDROID_APP_BINARY@",
+  "android-package": "@ANDROID_PACKAGE_NAME@",
+  "android-app-name": "@APP_NAME@",
+  "qml-root-path": "@CMAKE_SOURCE_DIR@",
+  "stdcpp-path": "@ANDROID_STDCPP_PATH@",
+  "sdkBuildToolsRevision": "@ANDROID_SDK_BUILD_TOOLS_REVISION@",
+  "extraPrefixDirs": [ "@CMAKE_INSTALL_PREFIX@" ],
+  "android-extra-plugins": [
+    "plugins/crypto/libqca-ossl.so"
+  ],
+  "android-extra-libs": [
+    "lib/libsigpac-go.so"
+  ]
+}

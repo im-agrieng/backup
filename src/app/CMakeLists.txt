@@ -36,6 +36,13 @@ function(create_executable)
       ${CMAKE_BINARY_DIR}/images/logo.qrc
       ${CMAKE_SOURCE_DIR}/resources/resources.qrc 
       ${ICON_SRC})
+  if(ANDROID)
+    configure_file(
+     "${CMAKE_CURRENT_SOURCE_DIR}/android-deployment-settings.json.in"
+     "${CMAKE_BINARY_DIR}/src/app/android-sigpac-go-deployment-settings.json"
+     @ONLY
+	)
+  endif()
 
   if(ANDROID)
     qt_add_executable(sigpac-go ${APP_SOURCES})
