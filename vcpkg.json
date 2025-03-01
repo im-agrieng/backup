@@ -37,14 +37,13 @@
     {
       "name": "qca",
       "host": true,
-      "default-features": false
+      "features": ["ossl"],
+      "platform": "!android"
     },
     {
       "name": "qca",
-      "default-features": false,
-      "features": [
-        "ossl"
-      ]
+      "features": ["ossl"],
+      "platform": "android"
     },
     "qgis",
     {
