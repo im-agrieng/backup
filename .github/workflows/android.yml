@@ -119,27 +119,50 @@ jobs:
           
       - name: Install QCA with shared libraries
         run: |
-          # Make sure vcpkg exists and is bootstrapped
+          # Make sure vcpkg exists
           if [ ! -d "vcpkg" ]; then
+            echo "Cloning vcpkg repository..."
             git clone https://github.com/microsoft/vcpkg.git
-            cd vcpkg
-            ./bootstrap-vcpkg.sh
-            cd ..
           fi
           
-          # Make sure vcpkg executable is available
-          if [ ! -f "./vcpkg/vcpkg" ]; then
-            cd vcpkg
-            ./bootstrap-vcpkg.sh
-            cd ..
+          # Navigate to vcpkg directory and bootstrap
+          cd vcpkg
+          
+          # Check if bootstrap script exists, if not download it
+          if [ ! -f "./bootstrap-vcpkg.sh" ]; then
+            echo "Bootstrap script not found, downloading it..."
+            curl -L https://raw.githubusercontent.com/microsoft/vcpkg/master/bootstrap-vcpkg.sh -o bootstrap-vcpkg.sh
+            chmod +x bootstrap-vcpkg.sh
           fi
           
-          # Install QCA with shared libraries - force Qt shared libs and verify output
+          # Run bootstrap
+          echo "Bootstrapping vcpkg..."
+          ./bootstrap-vcpkg.sh
+          BOOTSTRAP_RESULT=$?
+          
+          # Return to original directory
+          cd ..
+          
+          # Check if bootstrap was successful
+          if [ $BOOTSTRAP_RESULT -ne 0 ] || [ ! -f "./vcpkg/vcpkg" ]; then
+            echo "Bootstrapping failed. vcpkg executable not created."
+            echo "Contents of vcpkg directory:"
+            ls -la ./vcpkg
+            exit 1
+          fi
+          
+          echo "vcpkg successfully bootstrapped."
+          
+          # Install QCA with shared libraries
+          echo "Installing QCA with shared libraries..."
           ./vcpkg/vcpkg install qca:arm64-android --features=ossl --buildtype=release --options=qt-shared-libs=ON
           
+          # Create directory if it doesn't exist
+          mkdir -p ./vcpkg_installed/arm64-android/lib
+          
           # Verify the installation produced a shared library
-          find ./vcpkg_installed/arm64-android/lib -name "libqca*" || echo "QCA libraries not found!"
-          ls -la ./vcpkg_installed/arm64-android/lib/libqca* || true
+          echo "Verifying QCA installation..."
+          find ./vcpkg_installed -name "libqca*" || echo "QCA libraries not found in vcpkg_installed!"
            
       - name: 🌱 Install dependencies and generate project files
         env:
