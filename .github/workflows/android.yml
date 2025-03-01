@@ -47,6 +47,7 @@ jobs:
           # Show available resources
           free -h
           df -h
+      
       - name: 🐣 Checkout
         uses: actions/checkout@v4
         with:
@@ -87,7 +88,7 @@ jobs:
       - name: 💎 Setup ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2' # Not needed with a .ruby-version file
+          ruby-version: '3.2'
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: 🐩 Install CMake and Ninja
@@ -98,7 +99,7 @@ jobs:
       - name: 🔨 Prepare build env
         run: |
           sudo apt-get update
-          sudo apt-get install -y gperf autopoint '^libxcb.*-dev' libx11-xcb-dev libegl1-mesa libegl1-mesa-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev autoconf-archive libgstreamer-gl1.0-0 libgstreamer-plugins-base1.0-0 libfuse2 libcups2-dev nasm
+          sudo apt-get install -y gperf autopoint '^libxcb.*-dev' libx11-xcb-dev libegl1-mesa libegl1-mesa-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev autoconf automake libtool flex bison
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1
@@ -110,7 +111,6 @@ jobs:
       # This downloads the pre-compiled sentry-android-ndk libraries
       # But we are compiling this before gradle is executed, so it is not downloaded
       # Therefore we download it manually to get include headers and libraries
-      # ... a better implementation of this much appreciated ...
       - name: Download sentry libs
         run: |
           mkdir /tmp/sentry-android-ndk
@@ -119,7 +119,18 @@ jobs:
           
       - name: Install QCA with shared libraries
         run: |
-           ./vcpkg/vcpkg install qca:arm64-android --features=ossl --buildtype=release --options=qt-shared-libs=ON
+          # Make sure vcpkg exists and is bootstrapped
+          if [ ! -d "vcpkg" ]; then
+            git clone https://github.com/microsoft/vcpkg.git
+            ./vcpkg/bootstrap-vcpkg.sh
+          fi
+          
+          # Install QCA with shared libraries - force Qt shared libs and verify output
+          ./vcpkg/vcpkg install qca:arm64-android --features=ossl --buildtype=release --options=qt-shared-libs=ON
+          
+          # Verify the installation produced a shared library
+          find ./vcpkg_installed/arm64-android/lib -name "libqca*" || echo "QCA libraries not found!"
+          ls -la ./vcpkg_installed/arm64-android/lib/libqca* || true
            
       - name: 🌱 Install dependencies and generate project files
         env:
@@ -161,6 +172,10 @@ jobs:
           name: build-logs-${{ matrix.triplet }}
           path: |
             ${{ env.CMAKE_BUILD_DIR }}/**/*.log
+          if-no-files-found: warn
+          compression-level: 6
+          overwrite: false
+          include-hidden-files: false
 
       - name: 🌋 Build
         run: |
@@ -190,6 +205,10 @@ jobs:
           path: |
             ${{ env.CMAKE_BUILD_DIR }}/src/app/android-build/build/outputs/apk/release/android-build-release-signed.apk
             ${{ env.CMAKE_BUILD_DIR }}/src/app/android-build/build/outputs/apk/debug/android-build-debug.apk
+          if-no-files-found: warn
+          compression-level: 6
+          overwrite: false
+          include-hidden-files: false
 
       - name: 🍺 Deploy
         run: |
@@ -215,7 +234,6 @@ jobs:
           SENTRY_PROJECT_SLUG: qfield
         run: |
           bundle exec fastlane run sentry_debug_files_upload path:${{ env.CMAKE_BUILD_DIR }}/src/app/android-build/build/intermediates/merged_native_libs/release
-
 
   deploy_to_playstore:
     name: deploy to play store
@@ -260,42 +278,3 @@ jobs:
               qfield-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-x86.apk
         env:
           GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
-
-
-  comment_pr:
-    name: comment (pr)
-    runs-on: ubuntu-20.04
-    needs: build
-    if: ${{ github.event_name == 'pull_request' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        if: ${{ env.SENTRY_AUTH_TOKEN != '' }}
-
-      - name: Vars
-        id: vars
-        if: ${{ env.SENTRY_AUTH_TOKEN != '' }}
-        run: |
-          ./scripts/ci/env_gh.sh
-
-      - name: 💬 Create comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ env.SENTRY_AUTH_TOKEN != '' }}
-        with:
-          GITHUB_TOKEN: ${{ secrets.FAIRY_TOKEN }}
-          message: |
-            🎉 Ta-daaa, freshly created APKs are available for ${{ github.event.pull_request.head.sha }}: [**arm64-android**](https://qfieldapks.sos-ch-dk-2.exoscale-cdn.com/ci-builds/qfield-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-arm64.apk)
-            <details>
-            <summary>Other architectures</summary>
-
-            - [arm-neon-android](https://qfieldapks.sos-ch-dk-2.exoscale-cdn.com/ci-builds/qfield-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-arm-neon.apk)
-            - [x64-android](https://qfieldapks.sos-ch-dk-2.exoscale-cdn.com/ci-builds/qfield-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-x64.apk)
-            - [x86-android](https://qfieldapks.sos-ch-dk-2.exoscale-cdn.com/ci-builds/qfield-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-x86.apk)
-            - [**all access arm64-android**](https://qfieldapks.sos-ch-dk-2.exoscale-cdn.com/ci-builds/qfield_all_access-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-arm64.apk)
-            - [all access arm-neon-android](https://qfieldapks.sos-ch-dk-2.exoscale-cdn.com/ci-builds/qfield_all_access-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-arm-neon.apk)
-            - [all access x64-android](https://qfieldapks.sos-ch-dk-2.exoscale-cdn.com/ci-builds/qfield_all_access-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-x64.apk)
-            - [all access x86-android](https://qfieldapks.sos-ch-dk-2.exoscale-cdn.com/ci-builds/qfield_all_access-${{ env.CI_PACKAGE_FILE_SUFFIX }}-android-x86.apk)
-            </details>
-
-
-
