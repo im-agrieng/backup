@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/sigpac-go-targets.cmake")
+check_required_components(sigpac-go)
+
+# Provide path information
+set(SIGPAC_GO_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/@SIGPAC_INCLUDE_DIR@")
+set(SIGPAC_GO_LIB_DIR "@CMAKE_INSTALL_PREFIX@/@SIGPAC_LIB_DIR@")
