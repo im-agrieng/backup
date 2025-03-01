@@ -35,7 +35,7 @@ target_compile_features(sigpac-go_service PUBLIC cxx_std_17)
 
 set_target_properties(sigpac-go_service PROPERTIES 
     AUTOMOC TRUE
-    OUTPUT_NAME "sigpac-go"
+    OUTPUT_NAME "sigpac-go_service"
 )
 
 target_link_libraries(sigpac-go_service PRIVATE qfield_core ${QGIS_CORE_LIBRARY})
