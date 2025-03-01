@@ -7,10 +7,7 @@ if(POLICY QTP0002)
     qt_policy(SET QTP0002 NEW)
 endif()
 
-if(WITH_VCPKG)
-    find_package(Qca REQUIRED)
-    target_link_libraries(${exe_TARGET} PRIVATE Qca::Qca)
-endif()
+
 
 # Configure platform-specific settings
 if(MSVC)
@@ -64,7 +61,12 @@ function(create_executable)
     set_property(TARGET sigpac-go PROPERTY QT_QML_ROOT_PATH
                                          ${CMAKE_SOURCE_DIR}/src/qml)
 
-    set_target_properties(sigpac-go PROPERTIES
+    if(WITH_VCPKG)
+    find_package(Qca REQUIRED)
+    target_link_libraries(${exe_TARGET} PRIVATE Qca::Qca)
+	endif()
+	
+	set_target_properties(sigpac-go PROPERTIES
         QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/android-sigpac-go-deployment-settings.json
     )
 
