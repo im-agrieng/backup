@@ -18,12 +18,16 @@
         "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@"
     ],
     "android-extra-plugins": [
-        "plugins/crypto/libqca-ossl.so"
+        "plugins/crypto/libqca-ossl.so",
+        "plugins/platforms/libplugins_platforms_qtforandroid_armeabi-v7a.so"
     ],
     "android-extra-libs": [
         "lib/libqca.so",
         "lib/libcrypto.so",
         "lib/libssl.so",
         "lib/libz.so"
+    ],
+    "android-extra-libexec": [
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib"
     ]
 }

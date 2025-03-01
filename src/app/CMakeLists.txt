@@ -73,20 +73,20 @@ function(create_executable)
                                           ${CMAKE_SOURCE_DIR}/src/qml)
 
 	if(WITH_VCPKG)
-    # QCA configuration for Android
-    target_include_directories(${exe_TARGET} PRIVATE 
-        ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include)
-    target_link_libraries(${exe_TARGET} PRIVATE 
-        ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so
-        ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so
-        ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so)
-    
-    # Add QCA plugins path for Android
-    set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_PLUGINS 
-                "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins")
-    set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
-                "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-	endif()
+        # QCA configuration for Android
+        target_include_directories(${exe_TARGET} PRIVATE 
+            ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include)
+        target_link_libraries(${exe_TARGET} PRIVATE 
+            ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so
+            ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so
+            ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so)
+        
+        # Add QCA plugins path for Android
+        set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_PLUGINS 
+                    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins")
+        set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
+                    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+    endif()
     
     set_target_properties(${exe_TARGET} PROPERTIES
         QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/android-sigpac-go-deployment-settings.json
