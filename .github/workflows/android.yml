@@ -117,44 +117,52 @@ jobs:
           wget https://repo1.maven.org/maven2/io/sentry/sentry-android-ndk/7.19.1/sentry-android-ndk-7.19.1.aar -O /tmp/sentry.zip
           unzip /tmp/sentry.zip -d /tmp/sentry-android-ndk
           
-      - name: Setup vcpkg with QCA
+      - name: Setup QCA for arm64-android
         run: |
-          echo "Setting up vcpkg properly..."
-          # Remove any partial vcpkg setup
-          rm -rf vcpkg
-          
-          # Clone the entire vcpkg repository
-          git clone https://github.com/microsoft/vcpkg.git
-          
-          # Run bootstrap
-          cd vcpkg
-          ./bootstrap-vcpkg.sh
-          cd ..
-          
-          # Verify vcpkg was properly bootstrapped
-          if [ ! -f "./vcpkg/vcpkg" ]; then
-            echo "Error: bootstrap failed, vcpkg executable not created"
-            exit 1
-          fi
-          
-          echo "vcpkg bootstrapped successfully."
-          
-          # Check if QCA already has ossl feature in vcpkg.json
-          QCA_WITH_OSSL=$(grep -c '"name": "qca".*"features": \["ossl"\]' vcpkg.json || true)
-          
-          if [ "$QCA_WITH_OSSL" -eq 0 ]; then
-            echo "QCA with OSSL feature not found in vcpkg.json, installing vcpkg dependencies..."
+          # Make sure the qca port directory exists
+          if [ -d "./vcpkg/ports/qca" ]; then
+            echo "QCA port exists in vcpkg/ports"
             
-            # Use --triplet instead of trying to modify vcpkg.json directly
-            VCPKG_FEATURE_FLAGS="manifests,registries" ./vcpkg/vcpkg install --triplet=${{ matrix.triplet }}
+            # Create a separate directory for just building QCA
+            mkdir -p build-qca
+            cd build-qca
+            
+            # Clone a fresh vcpkg for building QCA
+            git clone https://github.com/microsoft/vcpkg.git
+            cd vcpkg
+            ./bootstrap-vcpkg.sh
+            
+            # Create triplet file specifically for QCA with shared libs
+            mkdir -p triplets/community
+            cat > triplets/community/arm64-android.cmake << 'EOF'
+            set(VCPKG_TARGET_ARCHITECTURE arm64)
+            set(VCPKG_CRT_LINKAGE dynamic)
+            set(VCPKG_LIBRARY_LINKAGE shared)
+            set(VCPKG_CMAKE_SYSTEM_NAME Android)
+            EOF
+            
+            # Copy the QCA port files
+            mkdir -p ports/qca
+            cp -R ../../../vcpkg/ports/qca/* ports/qca/
+            
+            # Install QCA with ossl feature 
+            ./vcpkg install qca[ossl] --triplet=arm64-android
+            
+            # Copy the build outputs back to the main tree
+            mkdir -p ../../../vcpkg_installed/arm64-android
+            cp -R installed/arm64-android/* ../../../vcpkg_installed/arm64-android/
+            
+            # Return to original directory
+            cd ../../
+            
+            # Display the QCA files that were built
+            echo "QCA installation complete. Verifying files:"
+            find ../vcpkg_installed -name "libqca*" || echo "No QCA libraries found in vcpkg installation"
           else
-            echo "QCA with OSSL feature found in vcpkg.json, installing vcpkg dependencies..."
-            VCPKG_FEATURE_FLAGS="manifests,registries" ./vcpkg/vcpkg install --triplet=${{ matrix.triplet }}
+            echo "QCA port not found in ./vcpkg/ports/qca - falling back to regular build"
+            # Just run vcpkg install with the settings from vcpkg.json
+            ./vcpkg/vcpkg install --triplet=${{ matrix.triplet }} --overlay-ports=vcpkg/ports --overlay-triplets=vcpkg/triplets
           fi
-          
-          # Verify the installation
-          echo "QCA installation complete. Verifying files:"
-          find ./vcpkg_installed -name "libqca*" || echo "No QCA libraries found in vcpkg installation"
            
       - name: 🌱 Install dependencies and generate project files
         env:
@@ -164,6 +172,13 @@ jobs:
           rm -rf ${CMAKE_BUILD_DIR}/*
           TRIPLET=${{ matrix.triplet }} ALL_FILES_ACCESS=${{ matrix.all_files_access }} source ./scripts/version_number.sh
           TRIPLET=${{ matrix.triplet }} ALL_FILES_ACCESS=${{ matrix.all_files_access }} source ./scripts/ci/generate-version-details.sh
+
+          # Make sure QCA libraries are available to the build
+          QCA_PATH="$(pwd)/vcpkg_installed/arm64-android"
+          if [ -d "$QCA_PATH" ]; then
+            echo "QCA installation found at $QCA_PATH"
+            ls -la "$QCA_PATH/lib" || echo "No lib directory found"
+          fi
 
           cmake -S "${{ github.workspace }}" \
                 -B "${CMAKE_BUILD_DIR}" \
