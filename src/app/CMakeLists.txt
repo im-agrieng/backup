@@ -3,6 +3,10 @@ find_package(Qt6QuickCompiler QUIET)
 find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
 find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
 
+if(POLICY QTP0002)
+    qt_policy(SET QTP0002 NEW)
+endif()
+
 # Configure platform-specific settings
 if(MSVC)
   configure_file("${CMAKE_SOURCE_DIR}/platform/windows/appicon.rc.in"
@@ -55,8 +59,6 @@ function(create_executable)
     set_property(TARGET sigpac-go PROPERTY QT_QML_ROOT_PATH
                                          ${CMAKE_SOURCE_DIR}/src/qml)
 
-    # Generate Android deployment settings
-    qt_android_generate_deployment_settings(sigpac-go)
     set_target_properties(sigpac-go PROPERTIES
         QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/android-sigpac-go-deployment-settings.json
     )
