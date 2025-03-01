@@ -62,17 +62,17 @@ function(create_executable)
 
 
   if(ANDROID)
-    qt_add_executable(${exe_TARGET} ${APP_SOURCES})  # Use ${exe_TARGET} instead of hardcoded name
+    qt_add_executable(${exe_TARGET} ${APP_SOURCES})
     
     # Android-specific configurations
     set_property(TARGET ${exe_TARGET} PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-                                          ${ANDROID_PACKAGE_SOURCE_DIR})
+                                       ${ANDROID_PACKAGE_SOURCE_DIR})
     set_property(TARGET ${exe_TARGET} PROPERTY QT_QML_IMPORT_PATH
-                                          $ENV{Qt6_DIR}/qml)
+                                       $ENV{Qt6_DIR}/qml)
     set_property(TARGET ${exe_TARGET} PROPERTY QT_QML_ROOT_PATH
-                                          ${CMAKE_SOURCE_DIR}/src/qml)
+                                       ${CMAKE_SOURCE_DIR}/src/qml)
 
-	if(WITH_VCPKG)
+    if(WITH_VCPKG)
         # QCA configuration for Android
         target_include_directories(${exe_TARGET} PRIVATE 
             ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include)
@@ -93,9 +93,9 @@ function(create_executable)
     )
 
     set(PROJECT_NAME ${exe_TARGET})
-	else()
+else()
     add_executable(${exe_TARGET} ${exe_EXTRA_ARGS} ${APP_SOURCES})
-  endif()
+endif()
 
   # Translation files
   file(GLOB TS_FILES ${CMAKE_SOURCE_DIR}/i18n/*.ts)
