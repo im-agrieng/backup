@@ -33,7 +33,7 @@ if(WIN32)
 
     message(STATUS "   + NSIS                             YES ")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY "usr\\\\bin")
-    set(CPACK_NSIS_DISPLAY_NAME "QField")
+    set(CPACK_NSIS_DISPLAY_NAME "SIGPAC-Go")
 
     list(APPEND CPACK_GENERATOR "NSIS")
 endif()
