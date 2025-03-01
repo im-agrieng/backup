@@ -30,6 +30,23 @@ jobs:
             artifact_name: 'android-arm64'
 
     steps:
+      - name: Free System Resources
+        run: |
+          # Remove memory-hungry services
+          sudo service docker stop
+          sudo service mysql stop || true
+          sudo service postgresql stop || true
+          
+          # Clean up disk space
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo apt clean
+          
+          # Show available resources
+          free -h
+          df -h
       - name: 🐣 Checkout
         uses: actions/checkout@v4
         with:
@@ -66,7 +83,14 @@ jobs:
           echo "BUILD_ROOT=${BUILD_ROOT}" >> $GITHUB_ENV
           echo "BUILD_TYPE=Release" >> $GITHUB_ENV
           echo "CMAKE_BUILD_DIR=${BUILD_ROOT}/builddir" >> $GITHUB_ENV
-
+          
+      - name: Configure build optimizations
+        run: |
+          # Limit parallel jobs to prevent resource exhaustion
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=1" >> $GITHUB_ENV
+          echo "VCPKG_MAX_CONCURRENCY=1" >> $GITHUB_ENV
+          echo "NINJA_STATUS=[%f/%t %es] " >> $GITHUB_ENV
+          
       - name: 💎 Setup ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -99,11 +123,14 @@ jobs:
           mkdir /tmp/sentry-android-ndk
           wget https://repo1.maven.org/maven2/io/sentry/sentry-android-ndk/7.19.1/sentry-android-ndk-7.19.1.aar -O /tmp/sentry.zip
           unzip /tmp/sentry.zip -d /tmp/sentry-android-ndk
-
+          
+         
       - name: 🌱 Install dependencies and generate project files
         env:
           WORKSPACE: ${{ github.workspace }}
         run: |
+          # Clean any previous build artifacts
+          rm -rf ${CMAKE_BUILD_DIR}/*
           TRIPLET=${{ matrix.triplet }} ALL_FILES_ACCESS=${{ matrix.all_files_access }} source ./scripts/version_number.sh
           TRIPLET=${{ matrix.triplet }} ALL_FILES_ACCESS=${{ matrix.all_files_access }} source ./scripts/ci/generate-version-details.sh
 
