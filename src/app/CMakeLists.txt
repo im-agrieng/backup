@@ -7,6 +7,13 @@ if(POLICY QTP0002)
     qt_policy(SET QTP0002 NEW)
 endif()
 
+if(WITH_VCPKG)
+    # Set QCA paths for vcpkg
+    set(QCA_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/cmake/Qca")
+    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QCA_DIR})
+    find_package(Qca REQUIRED)
+endif()
+
 
 
 # Configure platform-specific settings
@@ -50,12 +57,7 @@ function(create_executable)
 	)
   endif()
   
-  if(WITH_VCPKG)
-    # Set QCA paths for vcpkg
-    set(QCA_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/cmake/Qca")
-    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QCA_DIR})
-    find_package(Qca REQUIRED)
-  endif()
+
 
   if(ANDROID)
     qt_add_executable(${exe_TARGET} ${APP_SOURCES})  # Use ${exe_TARGET} instead of hardcoded name
