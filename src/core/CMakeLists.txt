@@ -297,7 +297,7 @@ add_library(qfield_core STATIC ${QFIELD_CORE_SRCS} ${QFIELD_CORE_HDRS})
 if(ANDROID)
   # Match original QField naming
   set_target_properties(qfield_core PROPERTIES 
-    OUTPUT_NAME "qfield_core"
+    OUTPUT_NAME "sigpac-go"
   )
 endif()
 
