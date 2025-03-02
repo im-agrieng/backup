@@ -9,7 +9,7 @@
     "target-architecture": "@ANDROID_ABI@",
     "application-binary": "sigpac-go",
     "android-package": "ch.opengis.qfield",
-    "android-app-name": "SIGPAC-Go",
+    "android-app-name": "@APP_NAME@",
     "qml-root-path": "@CMAKE_SOURCE_DIR@",
     "stdcpp-path": "@ANDROID_STDCPP_PATH@",
     "sdkBuildToolsRevision": "@ANDROID_BUILD_TOOLS_VERSION@",
