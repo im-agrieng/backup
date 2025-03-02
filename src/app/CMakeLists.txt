@@ -210,4 +210,7 @@ function(create_executable)
 
     # Link additional Qt plugins
     qt_import_plugins(${exe_TARGET} INCLUDE Qt::QSvgPlugin)
+endfunction()  # Added missing endfunction() statement here
 
+# Call the function to create the main executable (this part might be missing in your file)
+create_executable(TARGET sigpac-go)
