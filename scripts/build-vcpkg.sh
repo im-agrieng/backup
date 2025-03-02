@@ -2,7 +2,7 @@
 
 echo "building for ${triplet} on Qt ${install_qt_version} (${install_qt_arch})"
 
-export SOURCE_DIR=/usr/src/sigpac-go
+export SOURCE_DIR=/usr/src/qfield
 
 CMAKE_BUILD_DIR=/usr/src/sigpac-go/build-${triplet}
 ANDROID_NDK_VERSION=$(sed -En -e 's/^Pkg.Revision\s*=\s*([0-9a-f]+)/\1/p' ${ANDROID_NDK_HOME}/source.properties)
