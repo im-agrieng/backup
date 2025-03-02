@@ -12,7 +12,7 @@ set(APP_ICON "qfield_logo" CACHE STRING "Application Icon")
 set(APK_VERSION_CODE "1" CACHE STRING "Apk Version Code (Example: 1)")
 set(APP_VERSION "0" CACHE STRING "Application Version (Example: v1.0.0)")
 set(APP_VERSION_STR "local - dev" CACHE STRING "Application Version Name (Example: 1.0.0 - Homerun)")
-set(APP_PACKAGE_NAME "sig" CACHE STRING "Package name suffix. E.g. qfield --> ch.opengis.qfield")
+set(APP_PACKAGE_NAME "qfield" CACHE STRING "Package name suffix. E.g. qfield -> ch.opengis.qfield")
 
 # Add SIGPAC-Go version information
 set(SIGPAC_GO_VERSION_MAJOR 1)
