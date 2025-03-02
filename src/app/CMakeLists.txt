@@ -55,9 +55,6 @@ file(GLOB QM_FILES_MANUAL ${CMAKE_SOURCE_DIR}/i18n/*.qm)
 configure_file(${CMAKE_SOURCE_DIR}/images/logo.qrc.in
                ${CMAKE_BINARY_DIR}/images/logo.qrc @ONLY)
 
-add_executable(sigpac-go ${APP_SOURCES}) # Define the executable
-target_link_libraries(sigpac-go  Qt::Core Qt::Gui) # Link required libraries
-
 # Set the correct application binary name for Android
 set(QT_ANDROID_APPLICATION_BINARY "sigpac-go")
 
@@ -213,3 +210,4 @@ function(create_executable)
 endfunction()  # Added missing endfunction() statement here
 
 # Call the function to create the main executable (this part might be missing in your file)
+create_executable(TARGET sigpac-go)
