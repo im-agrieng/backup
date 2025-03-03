@@ -38,12 +38,12 @@ elif [[ ${CI_PULL_REQUEST} = false ]]; then
 
 	if [[ ${ALL_FILES_ACCESS} == "ON" ]]; then
 		export APP_NAME="${CUSTOM_APP_NAME:-SIGPAC-Go~ Dev}"
-		export APP_PACKAGE_NAME="${CUSTOM_APP_PACKAGE_NAME:-qfield_all_access_dev}"
+		export APP_PACKAGE_NAME="${CUSTOM_APP_PACKAGE_NAME:-sigpacgo_all_access_dev}"  # Update from qfield_all_access_devv}"
 	else
 		export APP_NAME="${CUSTOM_APP_NAME:-SIGPAC-Go Dev}"
-		export APP_PACKAGE_NAME="${CUSTOM_APP_PACKAGE_NAME:-qfield_dev}"
+		export APP_PACKAGE_NAME="${CUSTOM_APP_PACKAGE_NAME:-sigpacgo_dev}"  # Update from qfield_devv}"
 	fi
-	export APP_ICON="qfield_logo_beta"
+	export APP_ICON="sigpacgo_logo_beta"  # Update this if you have created your own iconta"
 	export APP_VERSION=""
 	# take 0 + (2020400 + number of CI runs) + arch(triplet) number
 	# 020204000 has no meaning - it's just where we had to start
@@ -59,13 +59,13 @@ else
 	echo "Building pull request beta"
 	if [[ ${ALL_FILES_ACCESS} == "ON" ]]; then
 		export APP_NAME="SIGPAC-Go~ Beta ${CI_PULL_REQUEST_NUMBER}"
-		export APP_PACKAGE_NAME="qfield_all_access_beta"
+		export APP_PACKAGE_NAME="sigpacgo_all_access_beta"  # Update from qfield_all_access_betata"
 	else
 		export APP_NAME="SIGPAC-Go Beta ${CI_PULL_REQUEST_NUMBER}"
-		export APP_PACKAGE_NAME="qfield_beta"
+		export APP_PACKAGE_NAME="sigpacgo_beta"  # Update from qfield_betata"
 	fi
 
-	export APP_ICON="qfield_logo_pr"
+	export APP_ICON="sigpacgo_logo_pr"  # Update if you have created your own iconpr"
 	export APP_VERSION=""
 	export APP_VERSION_STR="PR${CI_PULL_REQUEST_NUMBER} - ${APP_VERSION_NAME}"
 	export APK_VERSION_CODE="1"
