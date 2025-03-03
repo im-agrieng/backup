@@ -18,20 +18,24 @@ if(WITH_VCPKG)
     find_package(Qca REQUIRED)
     message(STATUS "Found Qca: ${QCA_DIR}")
     
+    # The find_package command already finds the library, so we can remove the checks
     # Check if QCA is available as shared or static library
-    if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-        message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-        set(QCA_LIB_TYPE "SHARED")
-        set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-    elseif(EXISTS("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a"))
-        message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
-        set(QCA_LIB_TYPE "STATIC")
-        set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
-    else()
-        message(FATAL_ERROR "QCA library not found at ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/. 
-        Please make sure QCA is properly installed for ${VCPKG_TARGET_TRIPLET} by running:
-        vcpkg install qca:${VCPKG_TARGET_TRIPLET} --features=ossl --buildtype=release --options=qt-shared-libs=ON")
-    endif()
+    #if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+    #    message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+    #    set(QCA_LIB_TYPE "SHARED")
+    #    set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+    #elseif(EXISTS("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a"))
+    #    message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+    #    set(QCA_LIB_TYPE "STATIC")
+    #    set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+    #else()
+    #    message(FATAL_ERROR "QCA library not found at ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/. 
+    #    Please make sure QCA is properly installed for ${VCPKG_TARGET_TRIPLET} by running:
+    #    vcpkg install qca:${VCPKG_TARGET_TRIPLET} --features=ossl --buildtype=release --options=qt-shared-libs=ON")
+    #endif
+    
+    set(QCA_LIB_TYPE "SHARED") # Set default value
+    set(QCA_LIBRARY Qca::qca) # Set default value
 endif()
 
 # Configure platform-specific settings
