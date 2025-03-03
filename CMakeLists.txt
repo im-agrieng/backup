@@ -8,7 +8,7 @@ set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/src/qml/imports CACHE PATH "QML import p
 
 set(CMAKE_COLOR_MAKEFILE ON)
 set(APP_NAME "SIGPAC-Go" CACHE STRING "Application Name")
-set(APP_ICON "qfield_logo" CACHE STRING "Application Icon") # You might want to rename this to sigpacgo_logogo
+set(APP_ICON "qfield_logo" CACHE STRING "Application Icon") # You might want to rename this to sigpacgo_logo
 set(APK_VERSION_CODE "1" CACHE STRING "Apk Version Code (Example: 1)")
 set(APP_VERSION "0" CACHE STRING "Application Version (Example: v1.0.0)")
 set(APP_VERSION_STR "local - dev" CACHE STRING "Application Version Name (Example: 1.0.0 - Homerun)")
