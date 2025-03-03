@@ -218,7 +218,7 @@ if(WITH_VCPKG)
   # will be bundled
   add_custom_target(deploy)
 
-  function(copy_resource(source target)
+  function(copy_resource source target)
     add_custom_command(TARGET deploy
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E make_directory "${SHARE_DIR}/${target}"
