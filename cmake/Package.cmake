@@ -146,9 +146,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
     if(QT_IOS_UPLOAD_SYMBOL)
         set(QT_IOS_UPLOAD_SYMBOL_KEY "<key>uploadSymbols</key><true/>")
     else()
-        set(QT_IOS_UPLOAD_SYMBOL_KEY ""
+        set(QT_IOS_UPLOAD_SYMBOL_KEY "")
     endif()
-
 
     configure_file(${CMAKE_SOURCE_DIR}/platform/ios/ExportOptions.plist.in "${QT_IOS_EXPORT_OPTIONS_FILE}" @ONLY)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/platform/ios/CPackIosDeployIpa.cmake.in "${CMAKE_BINARY_DIR}/CPackExternal.cmake" @ONLY)
