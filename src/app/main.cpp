@@ -81,7 +81,7 @@ int main( int argc, char **argv )
     if ( strcmp( argv[1], "--cloudservice" ) == 0 )
     {
       QCoreApplication::setOrganizationName( "OPENGIS.ch" );
-      QCoreApplication::setOrganizationDomain( "opengis.ch" ); );
+      QCoreApplication::setOrganizationDomain( "opengis.ch" );
       QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
       // This service only deals with background attachment uploads;
@@ -92,7 +92,7 @@ int main( int argc, char **argv )
     else if ( strcmp( argv[1], "--positioningservice" ) == 0 )
     {
       QCoreApplication::setOrganizationName( "OPENGIS.ch" );
-      QCoreApplication::setOrganizationDomain( "opengis.ch" ); );
+      QCoreApplication::setOrganizationDomain( "opengis.ch" );
       QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
       QFieldPositioningService app( argc, argv );
@@ -106,7 +106,7 @@ int main( int argc, char **argv )
   // Read settings, use a dummy app to get access to QSettings
   QCoreApplication *dummyApp = new QCoreApplication( argc, argv );
   QCoreApplication::setOrganizationName( "IMAGRIENG" );
-  QCoreApplication::setOrganizationDomain( "imagrieng.com" ); );
+  QCoreApplication::setOrganizationDomain( "imagrieng.com" );
   QCoreApplication::setApplicationName( "SIGPAC-Go" );
   const QSettings settings;
   const QString customLanguage = settings.value( "/customLanguage", QString() ).toString();
@@ -279,7 +279,7 @@ int main( int argc, char **argv )
 
   // Set up the QSettings environment must be done after qapp is created
   QCoreApplication::setOrganizationName( "IMAGRIENG" );
-  QCoreApplication::setOrganizationDomain( "imagrieng.com" ); );
+  QCoreApplication::setOrganizationDomain( "imagrieng.com" );
   QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
   app.installTranslator( &qtTranslator );
