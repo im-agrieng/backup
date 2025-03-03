@@ -24,8 +24,8 @@
 #endif
 
 #if defined( Q_OS_ANDROID )
-#include "qfieldcloudservice.h"
-#include "qfieldpositioningservice.h"
+#include "qfieldcloudservice.h" // Keep original header
+#include "qfieldpositioningservice.h" // Keep original header
 #endif
 
 #include <qgsapplication.h>
@@ -86,7 +86,7 @@ int main( int argc, char **argv )
 
       // This service only deals with background attachment uploads;
       // it will terminate once all uploads are done
-      QFieldCloudService app( argc, argv );
+      QFieldCloudService app( argc, argv ); // Update to SigpacgoCloudService
       return 0;
     }
     else if ( strcmp( argv[1], "--positioningservice" ) == 0 )
@@ -95,7 +95,7 @@ int main( int argc, char **argv )
       QCoreApplication::setOrganizationDomain( "opengis.ch" );
       QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
-      QFieldPositioningService app( argc, argv );
+      QFieldPositioningService app( argc, argv ); // Update to SigpacgoPositioningService
       return app.exec();
     }
   }

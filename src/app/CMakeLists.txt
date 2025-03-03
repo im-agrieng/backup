@@ -140,7 +140,7 @@ function(create_executable)
             QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_BINARY_DIR}/src/app/android-sigpac-go-deployment-settings.json
         )
     else()
-        add_executable(${exe_TARGET} ${exe_EXTRA_ARGS} ${APP_SOURCES})
+        add_executable(${exe_TARGET} ${exe_EXTRA_ARGS} ${APP_SOURCES}) # exe_TARGET should be sigpac-go
     endif()
 
     # Translation files
@@ -164,8 +164,8 @@ function(create_executable)
     # Link required libraries
     target_link_libraries(${exe_TARGET} 
         PRIVATE 
-        qfield_core 
-        qfield_qml
+        qfield_core  # Update to sigpacgo_core if applicable
+        qfield_qml # Update to sigpacgo_qml if applicable
         Qt::Core
         Qt::Gui
         Qt::Qml
