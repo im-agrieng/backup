@@ -67,7 +67,7 @@ inline void runOnAndroidMainThread( const std::function<void()> &runnable )
 const char *const applicationName = "QField";
 
 #define GLUE_HELPER( u, v, w, x, y, z ) u##v##w##x##y##z
-#define JNI_FUNCTION_NAME( package_name, class_name, function_name ) GLUE_HELPER( Java_ch_opengis_, package_name, _, class_name, _, function_name )
+#define JNI_FUNCTION_NAME( package_name, class_name, function_name ) GLUE_HELPER( Java_com_imagrieng_, package_name, _, class_name, _, function_name )
 
 AndroidPlatformUtilities::AndroidPlatformUtilities()
   : mActivity( qtAndroidContext() )
@@ -739,8 +739,8 @@ void AndroidPlatformUtilities::uploadPendingAttachments( QFieldCloudConnection *
     if ( connection )
     {
       qInfo() << "Launching QFieldCloud service...";
-      QJniObject::callStaticMethod<void>( "ch/opengis/" APP_PACKAGE_NAME "/QFieldCloudService",
-                                          "startQFieldCloudService",
+      QJniObject::callStaticMethod<void>( "com/imagrieng/sigpacgo/SigpacgoCloudService",
+                                          "startSigpacgoCloudService",
                                           "(Landroid/content/Context;)V",
                                           qtAndroidContext().object() );
     }
@@ -782,8 +782,8 @@ void AndroidPlatformUtilities::startPositioningService() const
   checkAndAcquirePermissions( { QStringLiteral( "android.permission.POST_NOTIFICATIONS" ) } );
 
   qInfo() << "Launching QField positioning service...";
-  QJniObject::callStaticMethod<void>( "ch/opengis/" APP_PACKAGE_NAME "/QFieldPositioningService",
-                                      "startQFieldPositioningService",
+  QJniObject::callStaticMethod<void>( "com/imagrieng/sigpacgo/SigpacgoPositioningService",
+                                      "startSigpacgoPositioningService",
                                       "(Landroid/content/Context;)V",
                                       qtAndroidContext().object() );
 }
@@ -791,8 +791,8 @@ void AndroidPlatformUtilities::startPositioningService() const
 void AndroidPlatformUtilities::stopPositioningService() const
 {
   qInfo() << "Terminating QField positioning service...";
-  QJniObject::callStaticMethod<void>( "ch/opengis/" APP_PACKAGE_NAME "/QFieldPositioningService",
-                                      "stopQFieldPositioningService",
+  QJniObject::callStaticMethod<void>( "com/imagrieng/sigpacgo/SigpacgoPositioningService",
+                                      "stopSigpacgoPositioningService",
                                       "(Landroid/content/Context;)V",
                                       qtAndroidContext().object() );
 }
@@ -802,7 +802,7 @@ extern "C" {
 #endif
 
 // QFieldActivity class functions
-JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, openProject )( JNIEnv *env, jobject obj, jstring path )
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME( sigpacgo, SigpacgoActivity, openProject )( JNIEnv *env, jobject obj, jstring path )
 {
   if ( AppInterface::instance() )
   {
@@ -813,7 +813,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, 
   return;
 }
 
-JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, openPath )( JNIEnv *env, jobject obj, jstring path )
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME( sigpacgo, SigpacgoActivity, openPath )( JNIEnv *env, jobject obj, jstring path )
 {
   if ( AppInterface::instance() )
   {
@@ -827,7 +827,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, 
 #define ANDROID_VOLUME_DOWN 25
 #define ANDROID_VOLUME_UP 24
 
-JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, volumeKeyDown )( JNIEnv *env, jobject obj, int volumeKeyCode )
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME( sigpacgo, SigpacgoActivity, volumeKeyDown )( JNIEnv *env, jobject obj, int volumeKeyCode )
 {
   if ( AppInterface::instance() )
   {
@@ -836,7 +836,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, 
   return;
 }
 
-JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, volumeKeyUp )( JNIEnv *env, jobject obj, int volumeKeyCode )
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME( sigpacgo, SigpacgoActivity, volumeKeyUp )( JNIEnv *env, jobject obj, int volumeKeyCode )
 {
   if ( AppInterface::instance() )
   {
@@ -845,7 +845,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, 
   return;
 }
 
-JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, resourceReceived )( JNIEnv *env, jobject obj, jstring path )
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME( sigpacgo, SigpacgoActivity, resourceReceived )( JNIEnv *env, jobject obj, jstring path )
 {
   if ( PlatformUtilities::instance() )
   {
@@ -856,7 +856,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, 
   return;
 }
 
-JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, resourceOpened )( JNIEnv *env, jobject obj, jstring path )
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME( sigpacgo, SigpacgoActivity, resourceOpened )( JNIEnv *env, jobject obj, jstring path )
 {
   if ( PlatformUtilities::instance() )
   {
@@ -867,7 +867,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, 
   return;
 }
 
-JNIEXPORT void JNICALL JNI_FUNCTION_NAME( APP_PACKAGE_JNI_NAME, QFieldActivity, resourceCanceled )( JNIEnv *env, jobject obj, jstring message )
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME( sigpacgo, SigpacgoActivity, resourceCanceled )( JNIEnv *env, jobject obj, jstring message )
 {
   if ( PlatformUtilities::instance() )
   {

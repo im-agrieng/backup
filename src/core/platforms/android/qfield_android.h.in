@@ -18,7 +18,7 @@
 #ifndef QFIELD_ANDROID_H
 #define QFIELD_ANDROID_H
 
-#define APP_PACKAGE_NAME "@APP_PACKAGE_NAME@"
-#define APP_PACKAGE_JNI_NAME @APP_PACKAGE_JNI_NAME@
+#define APP_PACKAGE_NAME "com.imagrieng.sigpacgo"
+#define APP_PACKAGE_JNI_NAME sigpacgo
 
 #endif // QFIELD_ANDROID_H

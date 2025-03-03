@@ -29,42 +29,33 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.opengis.qfield;
+package com.imagrieng.sigpacgo;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ServiceInfo;
-import android.os.Build;
-import android.util.Log;
-import org.qtproject.qt.android.bindings.QtService;
+// ... existing imports ...
 
-public class QFieldPositioningService extends QtService {
+public class SigpacgoPositioningService extends QtService { // Renamed class
 
     private NotificationManager notificationManager;
     private NotificationChannel notificationChannel;
 
-    private final String CHANNEL_ID = "qfield_service_02";
+    private final String CHANNEL_ID = "sigpacgo_service_02"; // Updated channel ID
     private final int NOTIFICATION_ID = 102;
 
-    private static QFieldPositioningService instance = null;
-    public static QFieldPositioningService getInstance() {
+    private static SigpacgoPositioningService instance = null; // Updated class name
+    public static SigpacgoPositioningService getInstance() { // Updated class name
         return instance;
     }
 
-    public static void startQFieldPositioningService(Context context) {
-        Log.v("QFieldPositioningService", "Starting QFieldPositioningService");
-        Intent intent = new Intent(context, QFieldPositioningService.class);
+    public static void startSigpacgoPositioningService(Context context) { // Updated class name
+        Log.v("SigpacgoPositioningService", "Starting SigpacgoPositioningService"); // Updated class name
+        Intent intent = new Intent(context, SigpacgoPositioningService.class); // Updated class name
         context.startForegroundService(intent);
     }
 
-    public static void stopQFieldPositioningService(Context context) {
-        Log.v("QFieldPositioningService", "Stopping QFieldPositioningService");
-        Intent intent = new Intent(context, QFieldPositioningService.class);
+    public static void stopSigpacgoPositioningService(Context context) { // Updated class name
+        Log.v("SigpacgoPositioningService", "Stopping SigpacgoPositioningService"); // Updated class name
+        Intent intent = new Intent(context, SigpacgoPositioningService.class); // Updated class name
         context.stopService(intent);
     }
 
@@ -73,7 +64,7 @@ public class QFieldPositioningService extends QtService {
         if (getInstance() != null) {
             getInstance().showNotification(message, addCopyToClipboard);
         } else {
-            Log.v("QFieldPositioningService",
+            Log.v("SigpacgoPositioningService",
                   "Showing message failed, no instance available.");
         }
     }
@@ -82,18 +73,18 @@ public class QFieldPositioningService extends QtService {
         if (getInstance() != null) {
             getInstance().closeNotification();
         } else {
-            Log.v("QFieldPositioningService",
+            Log.v("SigpacgoPositioningService",
                   "Closing message failed, no instance available.");
         }
     }
 
     @Override
     public void onCreate() {
-        Log.v("QFieldPositioningService", "onCreate triggered");
+        Log.v("SigpacgoPositioningService", "onCreate triggered");
         super.onCreate();
 
         if (getInstance() != null) {
-            Log.v("QFieldPositioningService",
+            Log.v("SigpacgoPositioningService",
                   "service already running, aborting onCreate.");
             stopSelf();
             return;
@@ -102,7 +93,7 @@ public class QFieldPositioningService extends QtService {
 
     @Override
     public void onDestroy() {
-        Log.v("QFieldPositioningService", "onDestroy triggered");
+        Log.v("SigpacgoPositioningService", "onDestroy triggered");
         notificationManager.cancel(NOTIFICATION_ID);
         super.onDestroy();
         instance = null;
@@ -110,7 +101,7 @@ public class QFieldPositioningService extends QtService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.v("QFieldPositioningService", "onStartCommand triggered");
+        Log.v("SigpacgoPositioningService", "onStartCommand triggered");
 
         if (intent != null && intent.hasExtra("content")) {
             ClipboardManager clipboard =
@@ -121,7 +112,7 @@ public class QFieldPositioningService extends QtService {
 
         int ret = super.onStartCommand(intent, flags, startId);
         if (instance != null) {
-            Log.v("QFieldPositioningService",
+            Log.v("SigpacgoPositioningService",
                   "service already running, aborting onStartCommand.");
             return START_NOT_STICKY;
         }
@@ -133,8 +124,8 @@ public class QFieldPositioningService extends QtService {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             notificationChannel = new NotificationChannel(
-                CHANNEL_ID, "QField", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationChannel.setDescription("QField Positioning");
+                CHANNEL_ID, "SIGPAC-Go Positioning", NotificationManager.IMPORTANCE_DEFAULT); // Updated channel name
+            notificationChannel.setDescription("SIGPAC-Go Positioning"); // Updated description
             notificationChannel.setImportance(
                 NotificationManager.IMPORTANCE_LOW);
             notificationChannel.enableLights(false);
@@ -164,7 +155,7 @@ public class QFieldPositioningService extends QtService {
                 startForeground(NOTIFICATION_ID, notification);
             }
         } catch (SecurityException e) {
-            Log.v("QFieldPositioningService",
+            Log.v("SigpacgoPositioningService",
                   "Missing permission to launch the positioning service");
             return START_NOT_STICKY;
         }
@@ -176,7 +167,7 @@ public class QFieldPositioningService extends QtService {
                                  boolean addCopyToClipboard) {
         // Return to QField activity when clicking on the notification
         PendingIntent contentIntent = PendingIntent.getActivity(
-            this, 0, new Intent(this, QFieldActivity.class),
+            this, 0, new Intent(this, SigpacgoActivity.class), // Updated class name
             PendingIntent.FLAG_MUTABLE);
 
         Notification.Builder builder =
@@ -194,7 +185,7 @@ public class QFieldPositioningService extends QtService {
         if (addCopyToClipboard) {
             // Allow for position details to be copied to the clipboard
             Intent copyIntent =
-                new Intent(this, QFieldPositioningService.class);
+                new Intent(this, SigpacgoPositioningService.class); // Updated class name
             copyIntent.putExtra("content", contentText);
             PendingIntent copyPendingIntent = PendingIntent.getService(
                 this, 0, copyIntent, PendingIntent.FLAG_MUTABLE);

@@ -82,7 +82,7 @@ int main( int argc, char **argv )
     {
       QCoreApplication::setOrganizationName( "OPENGIS.ch" );
       QCoreApplication::setOrganizationDomain( "opengis.ch" );
-      QCoreApplication::setApplicationName( qfield::appName );
+      QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
       // This service only deals with background attachment uploads;
       // it will terminate once all uploads are done
@@ -93,7 +93,7 @@ int main( int argc, char **argv )
     {
       QCoreApplication::setOrganizationName( "OPENGIS.ch" );
       QCoreApplication::setOrganizationDomain( "opengis.ch" );
-      QCoreApplication::setApplicationName( qfield::appName );
+      QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
       QFieldPositioningService app( argc, argv );
       return app.exec();
@@ -107,7 +107,7 @@ int main( int argc, char **argv )
   QCoreApplication *dummyApp = new QCoreApplication( argc, argv );
   QCoreApplication::setOrganizationName( "OPENGIS.ch" );
   QCoreApplication::setOrganizationDomain( "opengis.ch" );
-  QCoreApplication::setApplicationName( qfield::appName );
+  QCoreApplication::setApplicationName( "SIGPAC-Go" );
   const QSettings settings;
   const QString customLanguage = settings.value( "/customLanguage", QString() ).toString();
 
@@ -280,7 +280,7 @@ int main( int argc, char **argv )
   // Set up the QSettings environment must be done after qapp is created
   QCoreApplication::setOrganizationName( "OPENGIS.ch" );
   QCoreApplication::setOrganizationDomain( "opengis.ch" );
-  QCoreApplication::setApplicationName( qfield::appName );
+  QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
   app.installTranslator( &qtTranslator );
   app.installTranslator( &qfieldTranslator );
