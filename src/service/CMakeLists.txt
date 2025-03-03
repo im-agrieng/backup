@@ -13,15 +13,15 @@ add_library(sigpac-go_service STATIC ${QFIELD_SERVICE_SRCS} ${QFIELD_SERVICE_HDR
 # Generate both export headers to maintain compatibility during transition
 include(GenerateExportHeader)
 generate_export_header(sigpac-go_service
-    BASE_NAME sigpac_go_service
-    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/sigpac-go_service_export.h)
+    BASE_NAME qfield_service  # Changed to qfield_service
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h)  # Changed to qfield_service_export.h
 
-# Create a compatibility symlink or copy
-configure_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/sigpac-go_service_export.h
-    ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h
-    COPYONLY
-)
+# There is no need to create a compatibility symlink or copy as the original name is used
+# configure_file(
+#    ${CMAKE_CURRENT_BINARY_DIR}/sigpac-go_service_export.h
+#    ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h
+#    COPYONLY
+# )
 
 target_include_directories(sigpac-go_service SYSTEM
                          PUBLIC 
@@ -46,8 +46,7 @@ target_link_libraries(sigpac-go_service PUBLIC Qt::Core Qt::Positioning
 # Install both export headers
 install(FILES 
     ${QFIELD_SERVICE_HDRS}
-    ${CMAKE_CURRENT_BINARY_DIR}/sigpac-go_service_export.h
-    ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h # Only install qfield_service_export.h
     DESTINATION ${SIGPAC_INCLUDE_DIR}
 )
 

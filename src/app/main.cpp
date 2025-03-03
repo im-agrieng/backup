@@ -24,8 +24,8 @@
 #endif
 
 #if defined( Q_OS_ANDROID )
-#include "qfieldcloudservice.h" // Keep original header
-#include "qfieldpositioningservice.h" // Keep original header
+#include "qfieldcloudservice.h"
+#include "qfieldpositioningservice.h"
 #endif
 
 #include <qgsapplication.h>
@@ -86,7 +86,7 @@ int main( int argc, char **argv )
 
       // This service only deals with background attachment uploads;
       // it will terminate once all uploads are done
-      QFieldCloudService app( argc, argv ); // Update to SigpacgoCloudService
+      QFieldCloudService app( argc, argv );
       return 0;
     }
     else if ( strcmp( argv[1], "--positioningservice" ) == 0 )
@@ -95,7 +95,7 @@ int main( int argc, char **argv )
       QCoreApplication::setOrganizationDomain( "opengis.ch" );
       QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
-      QFieldPositioningService app( argc, argv ); // Update to SigpacgoPositioningService
+      QFieldPositioningService app( argc, argv );
       return app.exec();
     }
   }
@@ -105,8 +105,8 @@ int main( int argc, char **argv )
 
   // Read settings, use a dummy app to get access to QSettings
   QCoreApplication *dummyApp = new QCoreApplication( argc, argv );
-  QCoreApplication::setOrganizationName( "IMAGRIENG" );
-  QCoreApplication::setOrganizationDomain( "imagrieng.com" );
+  QCoreApplication::setOrganizationName( "OPENGIS.ch" );
+  QCoreApplication::setOrganizationDomain( "opengis.ch" );
   QCoreApplication::setApplicationName( "SIGPAC-Go" );
   const QSettings settings;
   const QString customLanguage = settings.value( "/customLanguage", QString() ).toString();
@@ -278,8 +278,8 @@ int main( int argc, char **argv )
   QSettings::setDefaultFormat( QSettings::NativeFormat );
 
   // Set up the QSettings environment must be done after qapp is created
-  QCoreApplication::setOrganizationName( "IMAGRIENG" );
-  QCoreApplication::setOrganizationDomain( "imagrieng.com" );
+  QCoreApplication::setOrganizationName( "OPENGIS.ch" );
+  QCoreApplication::setOrganizationDomain( "opengis.ch" );
   QCoreApplication::setApplicationName( "SIGPAC-Go" );
 
   app.installTranslator( &qtTranslator );
