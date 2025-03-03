@@ -108,6 +108,10 @@ jobs:
           key: ${{ matrix.triplet }}-qt6
           max-size: 500M
 
+      # The sentry-android dependency is added via gradle
+      # This downloads the pre-compiled sentry-android-ndk libraries
+      # But we are compiling this before gradle is executed, so it is not downloaded
+      # Therefore we download it manually to get include headers and libraries
       - name: Download sentry libs
         run: |
           mkdir /tmp/sentry-android-ndk
@@ -124,22 +128,13 @@ jobs:
           TRIPLET=${{ matrix.triplet }} ALL_FILES_ACCESS=${{ matrix.all_files_access }} source ./scripts/version_number.sh
           TRIPLET=${{ matrix.triplet }} ALL_FILES_ACCESS=${{ matrix.all_files_access }} source ./scripts/ci/generate-version-details.sh
 
-          # Ensure vcpkg directory exists and QCA is installed
-          vcpkg_dir="$(pwd)/vcpkg_installed"
-          mkdir -p "${vcpkg_dir}"
-          
-          QCA_PATH="${vcpkg_dir}/arm64-android"
+          # Make sure QCA libraries are available to the build
+          QCA_PATH="$(pwd)/vcpkg_installed/arm64-android"
           if [ -d "$QCA_PATH" ]; then
             echo "QCA installation found at $QCA_PATH"
             ls -la "$QCA_PATH/lib" || echo "No lib directory found"
-          else
-            echo "QCA path not found: $QCA_PATH"
-            echo "Installing QCA for arm64-android..."
-            # You may need to modify this command based on how vcpkg is set up in your CI
-            ./vcpkg install qca:arm64-android --features=ossl
           fi
 
-          # Continue with your existing cmake command
           cmake -S "${{ github.workspace }}" \
                 -B "${CMAKE_BUILD_DIR}" \
                 -G Ninja \
