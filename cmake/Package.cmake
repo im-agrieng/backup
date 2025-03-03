@@ -6,10 +6,10 @@ find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${VCPKG_INSTALLED_DIR}/ar
 find_program(ANDROIDDEPLOYQT_EXECUTABLE androiddeployqt HINTS "${QT_HOST_PATH}/tools/Qt6/bin")
 
 set(CPACK_GENERATOR)
-set(CPACK_PACKAGE_EXECUTABLES sigpac-go;SIGPAC-Go)  # Changed from qfield;QField
-set(CPACK_PACKAGE_HOMEPAGE_URL "https://qfield.org")
+set(CPACK_PACKAGE_EXECUTABLES sigpac-go;SIGPAC-Go)  # Changed from qfield;QField - Correct
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://imagrieng.com")  # Update to your company's website # Should be updated
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
-set(CPACK_PACKAGE_VENDOR "OPENGIS.ch")
+set(CPACK_PACKAGE_VENDOR "IMAGRIENG")  # Update vendor name# Should be updated to IMAGRIENG
 set(CPACK_PACKAGE_VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
@@ -86,19 +86,29 @@ if(ANDROID AND ANDROIDDEPLOYQT_EXECUTABLE)
 
     set(ANDROID_TEMPLATE_FOLDER "${CMAKE_BINARY_DIR}/android-template")
     file(COPY ${CMAKE_SOURCE_DIR}/platform/android/ DESTINATION ${ANDROID_TEMPLATE_FOLDER}/)
-    set(SRC_FOLDER "${ANDROID_TEMPLATE_FOLDER}/src/ch/opengis/sigpacgo")
-    if (NOT APP_PACKAGE_NAME STREQUAL "sigpacgo")
-        file(REMOVE_RECURSE ${SRC_FOLDER}) # remove any pre-existing content
-        file(RENAME "${ANDROID_TEMPLATE_FOLDER}/src/ch/opengis/qfield" ${SRC_FOLDER})
+    
+    # First check if the old directory structure exists
+    if(EXISTS "${ANDROID_TEMPLATE_FOLDER}/src/ch/opengis/qfield")
+        # Create the new directory structure
+        file(MAKE_DIRECTORY "${ANDROID_TEMPLATE_FOLDER}/src/com/imagrieng")
+        
+        # Copy the qfield directory to sigpacgo
+        file(COPY "${ANDROID_TEMPLATE_FOLDER}/src/ch/opengis/qfield/" 
+             DESTINATION "${ANDROID_TEMPLATE_FOLDER}/src/com/imagrieng/sigpacgo")
+        
+        # Process java files
+        file(GLOB_RECURSE JAVA_FILES "${ANDROID_TEMPLATE_FOLDER}/src/com/imagrieng/sigpacgo/*.java")
+        foreach(JAVA_FILE ${JAVA_FILES})
+          file(READ ${JAVA_FILE} CONTENT)
+          string(REGEX REPLACE "package ch.opengis.qfield" "package com.imagrieng.sigpacgo" CONTENT "${CONTENT}")
+          string(REGEX REPLACE "ch.opengis.qfield" "com.imagrieng.sigpacgo" CONTENT "${CONTENT}")
+          string(REGEX REPLACE "QField" "Sigpacgo" CONTENT "${CONTENT}")
+          file(WRITE ${JAVA_FILE} "${CONTENT}")
+        endforeach()
+        
+        # You can optionally remove the old directory structure
+        # file(REMOVE_RECURSE "${ANDROID_TEMPLATE_FOLDER}/src/ch")
     endif()
-    file(GLOB JAVA_FILES "${SRC_FOLDER}/*.java")
-    foreach(JAVA_FILE ${JAVA_FILES})
-      message(STATUS ${JAVA_FILE})
-      file(READ ${JAVA_FILE} CONTENT)
-      string(REGEX REPLACE "ch.opengis.qfield" "ch.opengis.sigpacgo"
-                           CONTENT "${CONTENT}")
-      file(WRITE ${JAVA_FILE} "${CONTENT}")
-    endforeach()
 
     set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${CMAKE_BINARY_DIR}/CPackExternal.cmake")
 endif()
@@ -136,7 +146,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
     if(QT_IOS_UPLOAD_SYMBOL)
         set(QT_IOS_UPLOAD_SYMBOL_KEY "<key>uploadSymbols</key><true/>")
     else()
-        set(QT_IOS_UPLOAD_SYMBOL_KEY "")
+        set(QT_IOS_UPLOAD_SYMBOL_KEY ""
     endif()
 
 

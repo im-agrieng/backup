@@ -2,14 +2,14 @@
 
 echo "building for ${triplet} on Qt ${install_qt_version} (${install_qt_arch})"
 
-export SOURCE_DIR=/usr/src/qfield
+export SOURCE_DIR=/usr/src/sigpac-go  # Updated from /usr/src/qfield
 
 CMAKE_BUILD_DIR=/usr/src/sigpac-go/build-${triplet}
 ANDROID_NDK_VERSION=$(sed -En -e 's/^Pkg.Revision\s*=\s*([0-9a-f]+)/\1/p' ${ANDROID_NDK_HOME}/source.properties)
 
 [[ -z ${APP_NAME} ]] && APP_NAME="SIGPAC-Go"
-[[ -z ${APP_PACKAGE_NAME} ]] && APP_PACKAGE_NAME="qfield"
-[[ -z ${APP_ICON} ]] && APP_ICON="qfield_logo_beta"
+[[ -z ${APP_PACKAGE_NAME} ]] && APP_PACKAGE_NAME="sigpacgo"  # Updated from "qfield"
+[[ -z ${APP_ICON} ]] && APP_ICON="qfield_logo_beta"  # Consider updating icon name too
 
 echo "Package name ${APP_PACKAGE_NAME}"
 

@@ -135,7 +135,7 @@ public class SigpacgoPositioningService extends QtService { // Renamed class
 
         Notification.Builder builder =
             new Notification.Builder(this)
-                .setSmallIcon(R.drawable.qfield_logo)
+                .setSmallIcon(R.drawable.sigpacgo_logo) // Use copied/renamed logo
                 .setWhen(System.currentTimeMillis())
                 .setOngoing(true)
                 .setContentTitle(getString(R.string.positioning_title))
@@ -172,7 +172,7 @@ public class SigpacgoPositioningService extends QtService { // Renamed class
 
         Notification.Builder builder =
             new Notification.Builder(this)
-                .setSmallIcon(R.drawable.qfield_logo)
+                .setSmallIcon(R.drawable.qfield_logo) // Keep using existing logo for now
                 .setWhen(System.currentTimeMillis())
                 .setOngoing(true)
                 .setContentTitle(getString(R.string.positioning_title))
