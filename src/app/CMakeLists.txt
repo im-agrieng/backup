@@ -14,7 +14,7 @@ find_package(OpenSSL REQUIRED)
 if(WITH_VCPKG)
     # Set QCA paths for vcpkg
     set(QCA_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/cmake/Qca")
-    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QCA_DIR}")
+    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QCA_DIR})
     find_package(Qca REQUIRED)
     message(STATUS "Found Qca: ${QCA_DIR}")
 
