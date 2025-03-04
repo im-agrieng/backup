@@ -2,6 +2,7 @@
 find_package(Qt6 COMPONENTS Core Gui Qml Quick Widgets LinguistTools Core5Compat REQUIRED)
 find_package(Qt6QuickCompiler QUIET)
 
+# Fix Qt policy issue with Android paths
 if(POLICY QTP0002)
     qt_policy(SET QTP0002 NEW)
 endif()
@@ -15,40 +16,48 @@ if(WITH_VCPKG)
     # Set QCA paths for vcpkg
     set(QCA_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/cmake/Qca")
     set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QCA_DIR})
-    find_package(Qca REQUIRED)
-    message(STATUS "Found Qca: ${QCA_DIR}")
-
-    # Check if QCA is available as shared or static library
-    # First check for soname with version suffix which is common for libraries
-    if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2.3.9" OR 
-       EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2.3" OR
-       EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2" OR
-       EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-        # Find the actual library file
-        file(GLOB QCA_LIBRARY_FILES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so*")
-        list(GET QCA_LIBRARY_FILES 0 QCA_LIBRARY)
-        message(STATUS "QCA Libraries (shared): ${QCA_LIBRARY}")
-        set(QCA_LIB_TYPE "SHARED")
-    elseif(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
-        message(STATUS "QCA Libraries (static): ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
-        set(QCA_LIB_TYPE "STATIC")
-        set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
-    else()
-        # Try to find through Qca target properties
-        get_target_property(QCA_LIBRARY_LOCATION qca IMPORTED_LOCATION)
-        if(QCA_LIBRARY_LOCATION)
-            message(STATUS "QCA Library found through target properties: ${QCA_LIBRARY_LOCATION}")
-            set(QCA_LIBRARY "${QCA_LIBRARY_LOCATION}")
-            if(QCA_LIBRARY_LOCATION MATCHES ".*\\.a$")
-                set(QCA_LIB_TYPE "STATIC")
+    
+    # Try to find QCA but don't report errors yet
+    find_package(Qca QUIET)
+    
+    if(Qca_FOUND)
+        message(STATUS "Found Qca: ${QCA_DIR}")
+        
+        # Check if QCA is available as shared or static library
+        if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2.3.9" OR 
+           EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2.3" OR
+           EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2" OR
+           EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+            # Find the actual library file
+            file(GLOB QCA_LIBRARY_FILES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so*")
+            list(GET QCA_LIBRARY_FILES 0 QCA_LIBRARY)
+            message(STATUS "QCA Libraries (shared): ${QCA_LIBRARY}")
+            set(QCA_LIB_TYPE "SHARED")
+        elseif(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+            message(STATUS "QCA Libraries (static): ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+            set(QCA_LIB_TYPE "STATIC")
+            set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+        elseif(TARGET qca)
+            # Try to find through Qca target properties
+            get_target_property(QCA_LIBRARY_LOCATION qca IMPORTED_LOCATION)
+            if(QCA_LIBRARY_LOCATION)
+                message(STATUS "QCA Library found through target properties: ${QCA_LIBRARY_LOCATION}")
+                set(QCA_LIBRARY "${QCA_LIBRARY_LOCATION}")
+                if(QCA_LIBRARY_LOCATION MATCHES ".*\\.a$")
+                    set(QCA_LIB_TYPE "STATIC")
+                else()
+                    set(QCA_LIB_TYPE "SHARED")
+                endif()
             else()
-                set(QCA_LIB_TYPE "SHARED")
+                message(STATUS "QCA target exists but location not found, assuming static library")
+                set(QCA_LIB_TYPE "STATIC")
             endif()
-        else()
-            message(FATAL_ERROR "QCA library not found at ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/. 
-            Please make sure QCA is properly installed for ${VCPKG_TARGET_TRIPLET} by running:
-            vcpkg install qca:${VCPKG_TARGET_TRIPLET} --features=ossl --buildtype=release --options=qt-shared-libs=ON")
+        else
+            message(STATUS "QCA package found but no library detected, proceeding without QCA support")
+            set(QCA_FOUND FALSE)
         endif()
+    else()
+        message(STATUS "QCA not found, proceeding without QCA support")
     endif()
 endif()
 
@@ -110,13 +119,13 @@ function(create_executable)
         set_property(TARGET ${exe_TARGET} PROPERTY QT_QML_ROOT_PATH
                                          ${CMAKE_SOURCE_DIR}/src/qml)
 
-        if(WITH_VCPKG)
+        if(WITH_VCPKG AND Qca_FOUND)
             # QCA configuration for Android
             target_include_directories(${exe_TARGET} PRIVATE 
                 ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include)
             
             # Link with appropriate library (static or shared)
-            if(QCA_LIB_TYPE STREQUAL "SHARED")
+            if(QCA_LIB_TYPE STREQUAL "SHARED" AND QCA_LIBRARY)
                 target_link_libraries(${exe_TARGET} PRIVATE 
                     ${QCA_LIBRARY}
                     ${OPENSSL_CRYPTO_LIBRARY}
@@ -130,28 +139,47 @@ function(create_executable)
                 endif()
                 
                 # Add all required libraries to Android extras - use the actual found library path
+                if(QCA_LIBRARY)
+                    set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
+                                "${QCA_LIBRARY}")
+                endif()
+                # Add OpenSSL and zlib dependencies
                 set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
-                            "${QCA_LIBRARY}"
                             "${OPENSSL_CRYPTO_LIBRARY}"
                             "${OPENSSL_SSL_LIBRARY}"
                             "${ZLIB_LIBRARIES}")
             else()
-                # Static library configuration
+                # Static library configuration or QCA not found
+                if(TARGET qca)
+                    target_link_libraries(${exe_TARGET} PRIVATE qca)
+                    # For static builds, we need to define this macro
+                    target_compile_definitions(${exe_TARGET} PRIVATE HAVE_STATIC_QCA_PLUGINS)
+                endif()
+                
+                # Always link OpenSSL and zlib
                 target_link_libraries(${exe_TARGET} PRIVATE 
-                    qca
                     ${OPENSSL_CRYPTO_LIBRARY}
                     ${OPENSSL_SSL_LIBRARY}
                     ${ZLIB_LIBRARIES})
                 
-                # For static builds, we need to define this macro
-                target_compile_definitions(${exe_TARGET} PRIVATE HAVE_STATIC_QCA_PLUGINS)
-                
-                # Add just the dependencies to Android extras (no QCA since it's static)
+                # Add dependencies to Android extras
                 set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
                             "${OPENSSL_CRYPTO_LIBRARY}"
                             "${OPENSSL_SSL_LIBRARY}"
                             "${ZLIB_LIBRARIES}")
             endif()
+        else()
+            # If no QCA, just link the base OpenSSL and ZLIB libraries
+            target_link_libraries(${exe_TARGET} PRIVATE 
+                ${OPENSSL_CRYPTO_LIBRARY}
+                ${OPENSSL_SSL_LIBRARY}
+                ${ZLIB_LIBRARIES})
+                
+            # Add dependencies to Android extras
+            set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
+                        "${OPENSSL_CRYPTO_LIBRARY}"
+                        "${OPENSSL_SSL_LIBRARY}"
+                        "${ZLIB_LIBRARIES}")
         endif()
         
         set_property(TARGET ${exe_TARGET} PROPERTIES
