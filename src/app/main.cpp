@@ -24,8 +24,8 @@
 #endif
 
 #if defined( Q_OS_ANDROID )
-#include "qfieldcloudservice.h"
-#include "qfieldpositioningservice.h"
+#include "qfieldcloudservice.h"        // Should be renamed or kept for consistency
+#include "qfieldpositioningservice.h"  // Should be renamed or kept for consistency
 #endif
 
 #include <qgsapplication.h>

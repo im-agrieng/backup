@@ -8,7 +8,7 @@ if(NOT "$ENV{KEYNAME}" STREQUAL ""
       --storepass "$ENV{STOREPASS}"
       --keypass "$ENV{KEYPASS}"
       # Update the deployment settings file name
-      --input @CMAKE_BINARY_DIR@/src/app/android-sigpac-go-deployment-settings.json
+      --input @CMAKE_BINARY_DIR@/src/app/android-sigpacgo-deployment-settings.json
       --output @CMAKE_BINARY_DIR@/src/app/android-build
       --deployment bundled
       --android-platform android-@ANDROID_TARGET_PLATFORM@

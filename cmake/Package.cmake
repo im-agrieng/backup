@@ -6,7 +6,7 @@ find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${VCPKG_INSTALLED_DIR}/ar
 find_program(ANDROIDDEPLOYQT_EXECUTABLE androiddeployqt HINTS "${QT_HOST_PATH}/tools/Qt6/bin")
 
 set(CPACK_GENERATOR)
-set(CPACK_PACKAGE_EXECUTABLES sigpac-go;SIGPAC-Go)  # Correct
+set(CPACK_PACKAGE_EXECUTABLES sigpacgo;SIGPAC-Go)  # Correct
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://imagrieng.com")  # Update to your company's website # Should be updated
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_VENDOR "IMAGRIENG")  # Update vendor name# Should be updated to IMAGRIENG

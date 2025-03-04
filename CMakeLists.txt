@@ -8,7 +8,7 @@ set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/src/qml/imports CACHE PATH "QML import p
 
 set(CMAKE_COLOR_MAKEFILE ON)
 set(APP_NAME "SIGPAC-Go" CACHE STRING "Application Name")
-set(APP_ICON "qfield_logo" CACHE STRING "Application Icon") # You might want to rename this to sigpacgo_logo
+set(APP_ICON "qfield_logo" CACHE STRING "Application Icon") # You might want to rename this to sigpacgo_logogo
 set(APK_VERSION_CODE "1" CACHE STRING "Apk Version Code (Example: 1)")
 set(APP_VERSION "0" CACHE STRING "Application Version (Example: v1.0.0)")
 set(APP_VERSION_STR "local - dev" CACHE STRING "Application Version Name (Example: 1.0.0 - Homerun)")
@@ -79,7 +79,7 @@ mark_as_advanced (QFIELD_INCLUDE_SUBDIR QFIELD_BIN_SUBDIR QFIELD_LIB_SUBDIR)
 set(QFIELD_BIN_DIR ${QFIELD_BIN_SUBDIR})
 set(QFIELD_LIB_DIR ${QFIELD_LIB_SUBDIR})
 set(QFIELD_INCLUDE_DIR ${QFIELD_INCLUDE_SUBDIR})
-set(QT_ANDROID_APPLICATION_BINARY "sigpac-go")
+set(QT_ANDROID_APPLICATION_BINARY "sigpacgo")
 
 # set the default locations where the targets (executables, libraries) will land when compiled
 # this is to allow running QField directly from the build directory.
@@ -299,7 +299,7 @@ if(WITH_VCPKG)
   install(DIRECTORY "${VCPKG_BASE_DIR}/share/gdal/" DESTINATION "${CMAKE_INSTALL_DATADIR}/gdal")
   install(FILES "${CMAKE_BINARY_DIR}/cacert.pem" DESTINATION ${CMAKE_INSTALL_DATADIR}/)
 
-  add_dependencies(sigpac-go deploy)
+  add_dependencies(sigpacgo deploy)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

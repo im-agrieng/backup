@@ -7,7 +7,7 @@
     "tool-prefix": "@ANDROID_TOOLCHAIN_MACHINE_NAME@",
     "ndk-host": "@ANDROID_NDK_HOST_SYSTEM_NAME@",
     "target-architecture": "@ANDROID_ABI@",
-    "application-binary": "sigpac-go",
+    "application-binary": "sigpacgo",
     "android-package": "com.imagrieng.sigpacgo",
     "android-app-name": "@APP_NAME@",
     "qml-root-path": "@CMAKE_SOURCE_DIR@",
