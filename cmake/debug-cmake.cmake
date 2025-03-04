@@ -1,0 +1,33 @@
+# This file provides debug information about the CMake build configuration
+# It can be used to print out important variables during the build process
+
+message(STATUS "========== CMake Debug Information ==========")
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "CMAKE_SYSTEM_VERSION: ${CMAKE_SYSTEM_VERSION}")
+message(STATUS "CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "CMAKE_CXX_COMPILER_VERSION: ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "App Settings:")
+message(STATUS "  APP_NAME: ${APP_NAME}")
+message(STATUS "  APP_ICON: ${APP_ICON}")
+message(STATUS "  APP_PACKAGE_NAME: ${APP_PACKAGE_NAME}")
+message(STATUS "  APP_VERSION: ${APP_VERSION}")
+message(STATUS "  APP_VERSION_STR: ${APP_VERSION_STR}")
+message(STATUS "  APK_VERSION_CODE: ${APK_VERSION_CODE}")
+
+if(ANDROID)
+  message(STATUS "Android Settings:")
+  message(STATUS "  ANDROID_PLATFORM: ${ANDROID_PLATFORM}")
+  message(STATUS "  ANDROID_ABI: ${ANDROID_ABI}")
+  message(STATUS "  ANDROID_NDK_PLATFORM: ${ANDROID_NDK_PLATFORM}")
+  message(STATUS "  ANDROID_STL: ${ANDROID_STL}")
+endif()
+
+message(STATUS "Library Info:")
+message(STATUS "  QT_VERSION_MAJOR: ${Qt6Core_VERSION_MAJOR}")
+message(STATUS "  QT_VERSION_MINOR: ${Qt6Core_VERSION_MINOR}")
+message(STATUS "  QT_VERSION_PATCH: ${Qt6Core_VERSION_PATCH}")
+message(STATUS "  QGIS Version: ${QGIS_VERSION}")
+message(STATUS "  GDAL Version: ${GDAL_VERSION}")
+message(STATUS "  PROJ Version: ${PROJ_VERSION}")
+message(STATUS "======== End CMake Debug Information ========")

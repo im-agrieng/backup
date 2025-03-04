@@ -311,4 +311,11 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 include(Package)
-include(debug-cmake.cmake)
+
+# Copy debug-cmake.cmake to the build directory and include it
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/debug-cmake.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/debug-cmake.cmake"
+  COPYONLY
+)
+include(${CMAKE_CURRENT_BINARY_DIR}/debug-cmake.cmake)

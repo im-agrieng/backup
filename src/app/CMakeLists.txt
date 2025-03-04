@@ -23,7 +23,7 @@ if(WITH_VCPKG)
         message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
         set(QCA_LIB_TYPE "SHARED")
         set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-    elseif(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+    elseif(EXISTS("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a"))
         message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
         set(QCA_LIB_TYPE "STATIC")
         set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
@@ -105,7 +105,7 @@ function(create_executable)
                     ${OPENSSL_SSL_LIBRARY}
                     ${ZLIB_LIBRARIES})
                     
-                # Add QCA plugins path for Android
+                # Add QCA plugins path for Android - FIX: Added PROPERTY keyword
                 if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins/crypto")
                     set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_PLUGINS 
                                 "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins")
@@ -207,7 +207,7 @@ function(create_executable)
 
     # Link additional Qt plugins
     qt_import_plugins(${exe_TARGET} INCLUDE Qt::QSvgPlugin)
-endfunction()  # Added missing endfunction() statement here
+endfunction()
 
-# Call the function to create the main executable (this part might be missing in your file)
+# Call the function to create the main executable
 create_executable(TARGET sigpacgo)
