@@ -188,7 +188,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  set(SHARE_DIR "${CMAKE_BINARY_DIR}/output/bin/qfield.app/Contents/share")
+  set(SHARE_DIR "${CMAKE_BINARY_DIR}/output/bin/sigpacgo.app/Contents/share")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
   set(SHARE_DIR "${ANDROID_PACKAGE_SOURCE_DIR}/assets")
 else()
@@ -218,7 +218,7 @@ if(WITH_VCPKG)
   # will be bundled
   add_custom_target(deploy)
 
-  function(copy_resource source target)
+  function(copy_resource(source target)
     add_custom_command(TARGET deploy
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E make_directory "${SHARE_DIR}/${target}"
@@ -303,8 +303,8 @@ if(WITH_VCPKG)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-  install(FILES ${CMAKE_SOURCE_DIR}/images/icons/qfield_logo.svg DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps RENAME qfield.svg)
-  install(FILES ${CMAKE_SOURCE_DIR}/platform/linux/qfield.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/qfield)
+  install(FILES ${CMAKE_SOURCE_DIR}/images/icons/qfield_logo.svg DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps RENAME sigpacgo.svg)
+  install(FILES ${CMAKE_SOURCE_DIR}/platform/linux/qfield.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/sigpacgo)
   install(FILES ${CMAKE_SOURCE_DIR}/platform/linux/qfield.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
 endif()
 
