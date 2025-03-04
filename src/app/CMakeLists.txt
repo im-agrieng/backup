@@ -23,7 +23,7 @@ if(WITH_VCPKG)
         message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
         set(QCA_LIB_TYPE "SHARED")
         set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-    elseif(EXISTS("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a"))
+    elseif(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
         message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
         set(QCA_LIB_TYPE "STATIC")
         set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
@@ -56,7 +56,7 @@ configure_file(${CMAKE_SOURCE_DIR}/images/logo.qrc.in
                ${CMAKE_BINARY_DIR}/images/logo.qrc @ONLY)
 
 # Set the correct application binary name for Android
-set(QT_ANDROID_APPLICATION_BINARY "sigpac-go")
+set(QT_ANDROID_APPLICATION_BINARY "sigpacgo")
 
 # Define main executable creation function
 function(create_executable)
@@ -75,7 +75,7 @@ function(create_executable)
     if(ANDROID)
         configure_file(
             "${CMAKE_CURRENT_SOURCE_DIR}/android-deployment-settings.json.in"
-            "${CMAKE_BINARY_DIR}/src/app/android-sigpac-go-deployment-settings.json"
+            "${CMAKE_BINARY_DIR}/src/app/android-sigpacgo-deployment-settings.json"
             @ONLY
         )
     endif()
@@ -137,7 +137,7 @@ function(create_executable)
         endif()
         
         set_property(TARGET ${exe_TARGET} PROPERTIES
-            QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_BINARY_DIR}/src/app/android-sigpac-go-deployment-settings.json
+            QT_ANDROID_DEPLOYMENT_SETTINGS_FILE ${CMAKE_BINARY_DIR}/src/app/android-sigpacgo-deployment-settings.json
         )
     else()
         add_executable(${exe_TARGET} ${exe_EXTRA_ARGS} ${APP_SOURCES})
@@ -175,7 +175,7 @@ function(create_executable)
     )
 
     if(ANDROID)
-        target_link_libraries(${exe_TARGET} PRIVATE sigpac-go_service)
+        target_link_libraries(${exe_TARGET} PRIVATE qfield_service)
     endif()
 
     if(WITH_SENTRY)
@@ -210,4 +210,4 @@ function(create_executable)
 endfunction()  # Added missing endfunction() statement here
 
 # Call the function to create the main executable (this part might be missing in your file)
-create_executable(TARGET sigpac-go)
+create_executable(TARGET sigpacgo)
