@@ -8,11 +8,11 @@ set(SIGPAC_INCLUDE_DIR "${QFIELD_INCLUDE_DIR}" CACHE PATH "Include installation 
 set(SIGPAC_FW_SUBDIR "${QFIELD_FW_SUBDIR}" CACHE PATH "Framework installation subdirectory")
 
 #library with new name
-add_library(sigpac-go_service STATIC ${QFIELD_SERVICE_SRCS} ${QFIELD_SERVICE_HDRS})
+add_library(qfield_service STATIC ${QFIELD_SERVICE_SRCS} ${QFIELD_SERVICE_HDRS})
 
 # Generate both export headers to maintain compatibility during transition
 include(GenerateExportHeader)
-generate_export_header(sigpac-go_service
+generate_export_header(qfield_service
     BASE_NAME qfield_service  # Changed to qfield_service
     EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/qfield_service_export.h)  # Changed to qfield_service_export.h
 
@@ -23,24 +23,24 @@ generate_export_header(sigpac-go_service
 #    COPYONLY
 # )
 
-target_include_directories(sigpac-go_service SYSTEM
+target_include_directories(qfield_service SYSTEM
                          PUBLIC 
                          ${CMAKE_CURRENT_BINARY_DIR}
                          ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_include_directories(sigpac-go_service
+target_include_directories(qfield_service
                          PUBLIC ${CMAKE_SOURCE_DIR}/src/service)
 
-target_compile_features(sigpac-go_service PUBLIC cxx_std_17)
+target_compile_features(qfield_service PUBLIC cxx_std_17)
 
-set_target_properties(sigpac-go_service PROPERTIES 
+set_target_properties(qfield_service PROPERTIES 
     AUTOMOC TRUE
-    OUTPUT_NAME "sigpac-go_service"
+    OUTPUT_NAME "qfield_service"
 )
 
-target_link_libraries(sigpac-go_service PRIVATE qfield_core ${QGIS_CORE_LIBRARY})
+target_link_libraries(qfield_service PRIVATE qfield_core ${QGIS_CORE_LIBRARY})
 
-target_link_libraries(sigpac-go_service PUBLIC Qt::Core Qt::Positioning
+target_link_libraries(qfield_service PUBLIC Qt::Core Qt::Positioning
                                             Qt::CorePrivate)
 
 # Install both export headers
@@ -51,7 +51,7 @@ install(FILES
 )
 
 install(
-  TARGETS sigpac-go_service
+  TARGETS qfield_service
   BUNDLE DESTINATION ${SIGPAC_BIN_DIR}
   RUNTIME DESTINATION ${SIGPAC_BIN_DIR}
   LIBRARY DESTINATION ${SIGPAC_LIB_DIR}

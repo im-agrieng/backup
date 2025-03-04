@@ -97,7 +97,7 @@ if(WITH_CCACHE)
   include(ccache)
 endif()
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_INSTALL_DATADIR}/qfield)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_INSTALL_DATADIR}/sigpacgo)
 
 set(WITH_BLUETOOTH
     ON
