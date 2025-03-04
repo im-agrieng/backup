@@ -6,3 +6,7 @@ check_required_components(sigpac-go)
 # Provide path information
 set(SIGPAC_GO_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/@SIGPAC_INCLUDE_DIR@")
 set(SIGPAC_GO_LIB_DIR "@CMAKE_INSTALL_PREFIX@/@SIGPAC_LIB_DIR@")
+
+# Also provide variables with consistent naming patterns (optional enhancement)
+set(SIGPACGO_INCLUDE_DIR "${SIGPAC_GO_INCLUDE_DIR}")
+set(SIGPACGO_LIB_DIR "${SIGPAC_GO_LIB_DIR}")
