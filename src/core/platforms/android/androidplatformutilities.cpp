@@ -64,7 +64,7 @@ inline void runOnAndroidMainThread( const std::function<void()> &runnable )
 #include <android/log.h>
 #include <jni.h>
 
-const char *const applicationName = "QField";
+const char *const applicationName = "SIGPAC-Go";
 
 #define GLUE_HELPER( u, v, w, x, y, z ) u##v##w##x##y##z
 #define JNI_FUNCTION_NAME( package_name, class_name, function_name ) GLUE_HELPER( Java_com_imagrieng_, package_name, _, class_name, _, function_name )
@@ -433,7 +433,7 @@ ResourceSource *AndroidPlatformUtilities::processCameraActivity( const QString &
         QJniObject filePathJni = QJniObject::fromString( filePath );
         QJniObject suffixJni = QJniObject::fromString( suffix );
 
-        QSettings().setValue( QStringLiteral( "QField/nativeCameraLaunched" ), true );
+        QSettings().setValue( QStringLiteral( "sigpacgo/nativeCameraLaunched" ), true );
         activity.callMethod<void>( "getCameraResource", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V",
                                    prefixJni.object<jstring>(),
                                    filePathJni.object<jstring>(),
@@ -474,7 +474,7 @@ ResourceSource *AndroidPlatformUtilities::processGalleryActivity( const QString 
         QJniObject filePathJni = QJniObject::fromString( filePath );
         QJniObject mimeTypeJni = QJniObject::fromString( mimeType );
 
-        QSettings().setValue( QStringLiteral( "QField/nativeCameraLaunched" ), true );
+        QSettings().setValue( QStringLiteral( "sigpacgo/nativeCameraLaunched" ), true );
         activity.callMethod<void>( "getGalleryResource", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
                                    prefixJni.object<jstring>(),
                                    filePathJni.object<jstring>(),
@@ -526,7 +526,7 @@ ResourceSource *AndroidPlatformUtilities::getFile( const QString &prefix, const 
         QJniObject filePathJni = QJniObject::fromString( filePath );
         QJniObject mimeTypeJni = QJniObject::fromString( mimeType );
 
-        QSettings().setValue( QStringLiteral( "QField/nativeCameraLaunched" ), true );
+        QSettings().setValue( QStringLiteral( "sigpacgo/nativeCameraLaunched" ), true );
         activity.callMethod<void>( "getFilePickerResource", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
                                    prefixJni.object<jstring>(),
                                    filePathJni.object<jstring>(),
@@ -560,7 +560,7 @@ ViewStatus *AndroidPlatformUtilities::open( const QString &filePath, bool isEdit
         QJniObject filePathJni = QJniObject::fromString( filePath );
         QJniObject mimeTypeJni = QJniObject::fromString( mimeType );
 
-        QSettings().setValue( QStringLiteral( "QField/nativeCameraLaunched" ), true );
+        QSettings().setValue( QStringLiteral( "sigpacgo/nativeCameraLaunched" ), true );
         activity.callMethod<void>( "openResource", "(Ljava/lang/String;Ljava/lang/String;Z)V",
                                    filePathJni.object<jstring>(),
                                    mimeTypeJni.object<jstring>(),
@@ -581,7 +581,7 @@ void AndroidPlatformUtilities::requestStoragePermission() const
                 << "android.permission.ACCESS_MEDIA_LOCATION";
 
     checkAndAcquirePermissions( permissions, true );
-    QSettings().setValue( QStringLiteral( "QField/storagePermissionChecked" ), true );
+    QSettings().setValue( QStringLiteral( "sigpacgo/storagePermissionChecked" ), true );
   }
 }
 
@@ -738,7 +738,7 @@ void AndroidPlatformUtilities::uploadPendingAttachments( QFieldCloudConnection *
   QTimer::singleShot( 500, [connection]() {
     if ( connection )
     {
-      qInfo() << "Launching QFieldCloud service...";
+      qInfo() << "Launching SIGPAC-GoCloud service...";
       QJniObject::callStaticMethod<void>( "com/imagrieng/sigpacgo/SigpacgoCloudService",
                                           "startSigpacgoCloudService",
                                           "(Landroid/content/Context;)V",
@@ -781,7 +781,7 @@ void AndroidPlatformUtilities::startPositioningService() const
   // Request notification permission
   checkAndAcquirePermissions( { QStringLiteral( "android.permission.POST_NOTIFICATIONS" ) } );
 
-  qInfo() << "Launching QField positioning service...";
+  qInfo() << "Launching SIGPAC-Go positioning service...";
   QJniObject::callStaticMethod<void>( "com/imagrieng/sigpacgo/SigpacgoPositioningService",
                                       "startSigpacgoPositioningService",
                                       "(Landroid/content/Context;)V",
@@ -790,7 +790,7 @@ void AndroidPlatformUtilities::startPositioningService() const
 
 void AndroidPlatformUtilities::stopPositioningService() const
 {
-  qInfo() << "Terminating QField positioning service...";
+  qInfo() << "Terminating SIGPAC-Go positioning service...";
   QJniObject::callStaticMethod<void>( "com/imagrieng/sigpacgo/SigpacgoPositioningService",
                                       "stopSigpacgoPositioningService",
                                       "(Landroid/content/Context;)V",
