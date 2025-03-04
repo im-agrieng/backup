@@ -8,10 +8,10 @@ set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/src/qml/imports CACHE PATH "QML import p
 
 set(CMAKE_COLOR_MAKEFILE ON)
 set(APP_NAME "SIGPAC-Go" CACHE STRING "Application Name")
-set(APP_ICON "qfield_logo" CACHE STRING "Application Icon") # You might want to rename this to sigpacgo_logogo
-set(APK_VERSION_CODE "1" CACHE STRING "Apk Version Code (Example: 1)")
-set(APP_VERSION "0" CACHE STRING "Application Version (Example: v1.0.0)")
-set(APP_VERSION_STR "local - dev" CACHE STRING "Application Version Name (Example: 1.0.0 - Homerun)")
+set(APP_ICON "qfield_logo_beta" CACHE STRING "Application Icon") # Updated to requested value
+set(APK_VERSION_CODE "020204323" CACHE STRING "Apk Version Code (Example: 1)") # Updated to requested value
+set(APP_VERSION "" CACHE STRING "Application Version (Example: v1.0.0)") # Updated to empty
+set(APP_VERSION_STR "master-dev - Dev" CACHE STRING "Application Version Name (Example: 1.0.0 - Homerun)") # Updated to requested value
 set(APP_PACKAGE_NAME "sigpacgo" CACHE STRING "Package name suffix. E.g. sigpacgo -> com.imagrieng.sigpacgo")
 
 # Add SIGPAC-Go version information
@@ -127,6 +127,8 @@ endif()
 set(QT_MIN_VERSION 6.6.0)
 
 if (ANDROID)
+  set(ANDROID_NDK_PLATFORM "" CACHE STRING "Android NDK Platform") # Added as requested, empty value
+  
   if(VCPKG_TARGET_TRIPLET STREQUAL "arm-android" OR VCPKG_TARGET_TRIPLET STREQUAL "arm-neon-android")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fstack-protector-strong -lunwind -Wl,--exclude-libs=libunwind.a")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fstack-protector-strong -lunwind -Wl,--exclude-libs=libunwind.a")
@@ -218,7 +220,7 @@ if(WITH_VCPKG)
   # will be bundled
   add_custom_target(deploy)
 
-  function(copy_resource(source target)
+  function(copy_resource source target)
     add_custom_command(TARGET deploy
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E make_directory "${SHARE_DIR}/${target}"
