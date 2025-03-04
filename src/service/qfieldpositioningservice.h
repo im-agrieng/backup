@@ -17,7 +17,7 @@
 #define QFIELDPOSITIONINGSERVICE_H
 
 #include "positioningsource.h"
-#include "sigpac-go_service_export.h"  // Updated to use new export header
+#include "qfield_service_export.h"  // Updated to use new export header
 
 #include <QRemoteObjectHost>
 #include <QTimer>
@@ -25,11 +25,6 @@
 #include <QtGlobal>
 
 class PositioningSource;
-
-// Define compatibility macro if needed
-#ifdef SIGPAC_GO_SERVICE_EXPORT
-#define QFIELD_SERVICE_EXPORT SIGPAC_GO_SERVICE_EXPORT
-#endif
 
 class QFIELD_SERVICE_EXPORT QFieldPositioningService : public QAndroidService
 {

@@ -1,5 +1,5 @@
 /***************************************************************************
-                            androidplatformutilities.h  -  utilities for qfield
+                            androidplatformutilities.h  -  utilities for sigpacgo
 
                               -------------------
               begin                : February 2016

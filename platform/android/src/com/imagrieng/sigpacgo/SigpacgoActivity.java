@@ -170,7 +170,7 @@ public class SigpacgoActivity extends QtActivity { // Renamed class
 
     private void prepareQtActivity() {
         sharedPreferences =
-            getSharedPreferences("SIGPAC-Go", Context.MODE_PRIVATE);  // Updated from "QField"
+            getSharedPreferences("sigpacgo", Context.MODE_PRIVATE);  // Updated from "QField"
         sharedPreferenceEditor = sharedPreferences.edit();
 
         checkAllFileAccess(); // Storage access permission handling for Android
@@ -185,7 +185,7 @@ public class SigpacgoActivity extends QtActivity { // Renamed class
             new File(dataDir + "Imported Datasets/").mkdir();
             new File(dataDir + "Imported Projects/").mkdir();
 
-            dataDir = dataDir + "SIGPAC-Go/";  // Updated from "QField/"
+            dataDir = dataDir + "SIGPAC-Go/";  // Updated from "QField/"/"
             // create directories
             new File(dataDir).mkdir();
             new File(dataDir + "basemaps/").mkdir();
@@ -200,7 +200,7 @@ public class SigpacgoActivity extends QtActivity { // Renamed class
 
         String storagePath =
             Environment.getExternalStorageDirectory().getAbsolutePath();
-        String rootDataDir = storagePath + "/SIGPAC-Go/";  // Updated from "/QField/"
+        String rootDataDir = storagePath + "/SIGPAC-Go/";  // Updated from "/QField/"/"
         File storageFile = new File(rootDataDir);
         storageFile.mkdir();
         if (storageFile.canWrite()) {
@@ -224,7 +224,7 @@ public class SigpacgoActivity extends QtActivity { // Renamed class
                 }
 
                 // create QField directories
-                String dataDir = file.getAbsolutePath() + "/SIGPAC-Go/";
+                String dataDir = file.getAbsolutePath() + "/sigpacgo/";  // Updated from "SIGPAC-Go/"
                 new File(dataDir + "basemaps/").mkdirs();
                 new File(dataDir + "fonts/").mkdirs();
                 new File(dataDir + "proj/").mkdirs();

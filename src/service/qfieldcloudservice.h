@@ -16,15 +16,10 @@
 #ifndef QFIELDCLOUDSERVICE_H
 #define QFIELDCLOUDSERVICE_H
 
-#include "sigpac-go_service_export.h"
+#include "qfield_service_export.h"
 
 #include <QtCore/private/qandroidextras_p.h>
 #include <QtGlobal>
-
-// export macro to match the new library
-#ifdef SIGPAC_GO_SERVICE_EXPORT
-#define QFIELD_SERVICE_EXPORT SIGPAC_GO_SERVICE_EXPORT
-#endif
 
 class QFIELD_SERVICE_EXPORT QFieldCloudService : public QAndroidService
 {
