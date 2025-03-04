@@ -19,18 +19,36 @@ if(WITH_VCPKG)
     message(STATUS "Found Qca: ${QCA_DIR}")
 
     # Check if QCA is available as shared or static library
-    if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-        message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+    # First check for soname with version suffix which is common for libraries
+    if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2.3.9" OR 
+       EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2.3" OR
+       EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so.2" OR
+       EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
+        # Find the actual library file
+        file(GLOB QCA_LIBRARY_FILES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so*")
+        list(GET QCA_LIBRARY_FILES 0 QCA_LIBRARY)
+        message(STATUS "QCA Libraries (shared): ${QCA_LIBRARY}")
         set(QCA_LIB_TYPE "SHARED")
-        set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so")
-    elseif(EXISTS("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a"))
-        message(STATUS "QCA Libraries: ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+    elseif(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
+        message(STATUS "QCA Libraries (static): ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
         set(QCA_LIB_TYPE "STATIC")
         set(QCA_LIBRARY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.a")
     else()
-        message(FATAL_ERROR "QCA library not found at ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/. 
-        Please make sure QCA is properly installed for ${VCPKG_TARGET_TRIPLET} by running:
-        vcpkg install qca:${VCPKG_TARGET_TRIPLET} --features=ossl --buildtype=release --options=qt-shared-libs=ON")
+        # Try to find through Qca target properties
+        get_target_property(QCA_LIBRARY_LOCATION qca IMPORTED_LOCATION)
+        if(QCA_LIBRARY_LOCATION)
+            message(STATUS "QCA Library found through target properties: ${QCA_LIBRARY_LOCATION}")
+            set(QCA_LIBRARY "${QCA_LIBRARY_LOCATION}")
+            if(QCA_LIBRARY_LOCATION MATCHES ".*\\.a$")
+                set(QCA_LIB_TYPE "STATIC")
+            else()
+                set(QCA_LIB_TYPE "SHARED")
+            endif()
+        else()
+            message(FATAL_ERROR "QCA library not found at ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/. 
+            Please make sure QCA is properly installed for ${VCPKG_TARGET_TRIPLET} by running:
+            vcpkg install qca:${VCPKG_TARGET_TRIPLET} --features=ossl --buildtype=release --options=qt-shared-libs=ON")
+        endif()
     endif()
 endif()
 
@@ -105,22 +123,22 @@ function(create_executable)
                     ${OPENSSL_SSL_LIBRARY}
                     ${ZLIB_LIBRARIES})
                     
-                # Add QCA plugins path for Android - FIX: Added PROPERTY keyword
+                # Add QCA plugins path for Android
                 if(EXISTS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins/crypto")
                     set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_PLUGINS 
                                 "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/plugins")
                 endif()
                 
-                # Add all required libraries to Android extras
+                # Add all required libraries to Android extras - use the actual found library path
                 set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
-                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libqca.so"
-                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so"
-                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so"
-                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libz.so")
+                            "${QCA_LIBRARY}"
+                            "${OPENSSL_CRYPTO_LIBRARY}"
+                            "${OPENSSL_SSL_LIBRARY}"
+                            "${ZLIB_LIBRARIES}")
             else()
                 # Static library configuration
                 target_link_libraries(${exe_TARGET} PRIVATE 
-                    ${QCA_LIBRARY}
+                    qca
                     ${OPENSSL_CRYPTO_LIBRARY}
                     ${OPENSSL_SSL_LIBRARY}
                     ${ZLIB_LIBRARIES})
@@ -130,9 +148,9 @@ function(create_executable)
                 
                 # Add just the dependencies to Android extras (no QCA since it's static)
                 set_property(TARGET ${exe_TARGET} APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
-                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libcrypto.so"
-                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libssl.so"
-                            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libz.so")
+                            "${OPENSSL_CRYPTO_LIBRARY}"
+                            "${OPENSSL_SSL_LIBRARY}"
+                            "${ZLIB_LIBRARIES}")
             endif()
         endif()
         

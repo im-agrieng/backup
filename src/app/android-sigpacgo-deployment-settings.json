@@ -1,0 +1,83 @@
+{
+    "description": "Android deployment settings for SIGPAC Go",
+    "qt": "@QT_ANDROID_PATH_CMAKE_DIR@",
+    "sdk": "@ANDROID_SDK_ROOT@",
+    "ndk": "@ANDROID_NDK@",
+    "toolchain-prefix": "@ANDROID_TOOLCHAIN_MACHINE_NAME@",
+    "tool-prefix": "@ANDROID_TOOLCHAIN_MACHINE_NAME@",
+    "ndk-host": "@ANDROID_NDK_HOST_SYSTEM_NAME@",
+    "target-architecture": "@ANDROID_ABI@",
+    "application-binary": "sigpacgo",
+    "android-package": "com.imagrieng.sigpacgo",
+    "android-app-name": "@APP_NAME@",
+    "qml-root-path": "@CMAKE_SOURCE_DIR@",
+    "stdcpp-path": "@ANDROID_STDCPP_PATH@",
+    "sdkBuildToolsRevision": "@ANDROID_BUILD_TOOLS_VERSION@",
+    "android-platform": "@ANDROID_TARGET_PLATFORM@",
+    "android-min-platform": "@ANDROID_PLATFORM_INT@",
+    "android-ndk-version": "@ANDROID_NDK_VERSION@",
+    
+    "extraPrefixDirs": [ 
+        "@CMAKE_INSTALL_PREFIX@",
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@"
+    ],
+    
+    "android-extra-plugins": [
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/plugins/crypto"
+    ],
+    
+    "android-extra-libs": [
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib/libcrypto.so",
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib/libssl.so",
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib/libz.so"
+    ],
+    
+    "android-extra-libexec": [
+        "@VCPKG_INSTALLED_DIR@/@VCPKG_TARGET_TRIPLET@/lib"
+    ],
+    
+    "android-package-source-directory": "@ANDROID_PACKAGE_SOURCE_DIR@",
+    "android-version-code": "@APK_VERSION_CODE@",
+    "android-version-name": "@APP_VERSION_STR@",
+    
+    "android-extra-packages": [
+        "org.qtproject.qt.android.positioning",
+        "com.imagrieng.sigpacgo.SigpacgoActivity",
+        "com.imagrieng.sigpacgo.SigpacgoCloudService",
+        "com.imagrieng.sigpacgo.SigpacgoPositioningService"
+    ],
+    
+    "android-extra-permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.FLASHLIGHT",
+        "android.permission.VIBRATE",
+        "android.permission.WAKE_LOCK",
+        "android.permission.NFC",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+    ],
+    
+    "android-deployment-dependencies": [
+        "androidx.appcompat:appcompat:1.6.1",
+        "androidx.documentfile:documentfile:1.0.1",
+        "androidx.fragment:fragment:1.6.2",
+        "com.google.android.material:material:1.11.0",
+        "io.sentry:sentry-android:7.19.1"
+    ],
+    
+    "use-gradle-plugin": true,
+    "gradle-plugin-version": "8.6.1"
+}
